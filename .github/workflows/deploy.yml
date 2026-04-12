@@ -1,0 +1,56 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci || npm install
+
+    - name: Run Tests
+      run: npx vitest run
+
+    # Override outDir since vite.config.js targets ../frontend/dist
+    # which resolves outside the action's workspace.
+    - name: Build Production Assets
+      run: npx vite build --outDir dist --emptyOutDir
+
+    # ---------------------------------------------------------
+    # DEPLOYMENT INSTRUCTIONS:
+    # Based on your previous backend deployment to a Linux VPS,
+    # you can use SCP to automatically push your compiled frontend 
+    # assets to Nginx or Django's static files directory.
+    #
+    # Uncomment the section below and add the following mapping 
+    # to your GitHub Repository Secrets (Settings -> Secrets -> Actions):
+    # - SERVER_HOST: Your VPS IP Address
+    # - SERVER_USER: Your SSH Username (e.g., ubuntu, root)
+    # - SSH_PRIVATE_KEY: Your SSH Private Key matching the server
+    # ---------------------------------------------------------
+
+    # - name: Deploy to Server via SCP
+    #   uses: appleboy/scp-action@v0.1.7
+    #   with:
+    #     host: ${{ secrets.SERVER_HOST }}
+    #     username: ${{ secrets.SERVER_USER }}
+    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+    #     # Specify what we want to copy
+    #     source: "dist/*"
+    #     # Destination path on the Linux server (e.g., where Nginx serves from)
+    #     target: "/var/www/title_deeds_frontend"
+    #     strip_components: 1
