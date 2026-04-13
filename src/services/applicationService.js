@@ -174,6 +174,25 @@ class ApplicationService {
         const response = await api.post('/applications/calculate-pricing/', params)
         return response.data
     }
+
+    /**
+     * Trigger land verification (SG API)
+     * @param {number} appId - Application ID
+     * @returns {Promise<Object>} Verification results
+     */
+    async verifyLand(appId) {
+        const response = await api.post(`/applications/${appId}/verify_land/`)
+        return response.data
+    }
+
+    /**
+     * Lookup property data by user National ID
+     * @returns {Promise<Object>} Property data
+     */
+    async lookupProperty() {
+        const response = await api.get('/applications/property_lookup/')
+        return response.data
+    }
 }
 
 // Export singleton instance

@@ -5,6 +5,7 @@ import { ChevronRight, ChevronLeft, Upload, Landmark, User, MapPin, FileCheck, U
 import axios from 'axios'
 import Breadcrumb from '../components/Breadcrumb'
 import { locationMapping, provinces } from '../data/locationMapping'
+import applicationService from '../services/applicationService'
 
 const ApplicationForm = ({ user }) => {
     const [step, setStep] = useState(1)
@@ -20,6 +21,11 @@ const ApplicationForm = ({ user }) => {
     const [existingApp, setExistingApp] = useState(null) // raw API data for existing-file hints
     const [isVerified, setIsVerified] = useState(false)
     const [verifying, setVerifying] = useState(false)
+    const [isLandVerified, setIsLandVerified] = useState(false)
+    const [verifyingProperty, setVerifyingProperty] = useState(false)
+    const [isSurveyed, setIsSurveyed] = useState(true) // Default to true until checked
+    const [priceData, setPriceData] = useState(null)
+    const [isCalculatingPrice, setIsCalculatingPrice] = useState(false)
 
     // Auto-populate user data from registration
     useEffect(() => {
@@ -44,9 +50,10 @@ const ApplicationForm = ({ user }) => {
 
                     // Prepare spouse fields for react-hook-form
                     const spouseFields = {}
-                    if (app.spouses && app.spouses.length > 0) {
-                        setSpouses(app.spouses)
-                        app.spouses.forEach((s, i) => {
+                    const backendSpouses = app.spouses_data || app.spouses;
+                    if (backendSpouses && backendSpouses.length > 0) {
+                        setSpouses(backendSpouses)
+                        backendSpouses.forEach((s, i) => {
                             spouseFields[`spouse_${i}_surname`] = s.surname || ''
                             spouseFields[`spouse_${i}_first_name`] = s.first_name || ''
                             spouseFields[`spouse_${i}_national_id`] = s.national_id || ''
@@ -140,32 +147,84 @@ const ApplicationForm = ({ user }) => {
         return true;
     };
 
-    const handleVerifyID = async () => {
-        const id = watch('national_id');
-        if (!id) {
-            setError('Please enter a National ID to verify.');
-            return;
+    // Automatically trigger identity verification on load for new applications
+    useEffect(() => {
+        if (!editId && !isVerified && !verifying && !fetching) {
+            handleVerifyID();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [editId, isVerified, fetching]);
+
+    const handleVerifyID = async () => {
         setVerifying(true);
         setError('');
         try {
-            const res = await axios.get(`/api/integrate/all/?id=${id}`);
-            const data = res.data;
+            // Trigger verification in backend (uses logged-in user)
+            const verifyRes = await axios.post('/api/users/profile/verify/');
             
-            // Auto-fill only non-sensitive Identity data
+            // On success, fetch the updated profile data
+            const profileRes = await axios.get('/api/users/profile/update/');
+            const data = profileRes.data;
+            
             reset({
                 ...watch(),
-                surname: data.surname,
-                first_name: data.first_name,
+                date_of_birth: data.date_of_birth,
+                sex: data.gender,
+                marital_status: data.marital_status,
+                title: data.title,
+                contact_address: data.residential_address
             });
             
             setIsVerified(true);
-            // ZLC dispute checks are no longer shown to frontend for privacy
         } catch (err) {
             console.error('Verification error:', err);
-            setError(err.response?.data?.error || 'No record found for this National ID across government databases.');
+            const errorMsg = err.response?.data?.error || err.response?.data?.detail || 'Verification failed. Please refer to the Registrar General office.';
+            setError(errorMsg);
         } finally {
             setVerifying(false);
+        }
+    };
+
+    const handleVerifyProperty = async () => {
+        setVerifyingProperty(true);
+        setError('');
+        try {
+            const data = await applicationService.lookupProperty();
+            
+            reset({
+                ...watch(),
+                property_description: data.property_description,
+                farm_name: data.property_description, 
+                farm_extent: data.size_hectares,
+                district: data.district
+            });
+            
+            setIsLandVerified(true);
+            setIsSurveyed(data.is_surveyed);
+        } catch (err) {
+            console.error('Property lookup error:', err);
+            setError(err.response?.data?.error || 'No property record found for your National ID.');
+        } finally {
+            setVerifyingProperty(false);
+        }
+    };
+
+    const handleCalculatePricing = async () => {
+        setIsCalculatingPrice(true);
+        try {
+            const formData = watch();
+            const params = {
+                farm_extent: formData.farm_extent,
+                arable_area: formData.arable_area,
+                is_war_veteran: formData.is_war_veteran,
+                is_cash_payment: formData.payment_method !== 'Mortgage'
+            };
+            const data = await applicationService.calculatePricing(params);
+            setPriceData(data);
+        } catch (err) {
+            console.error('Pricing calculation error:', err);
+        } finally {
+            setIsCalculatingPrice(false);
         }
     };
 
@@ -251,7 +310,10 @@ const ApplicationForm = ({ user }) => {
     }
 
     const nextStep = () => {
-        if (step < 4) setStep(s => s + 1)
+        if (step === 4) {
+            handleCalculatePricing();
+        }
+        if (step < 5) setStep(step + 1)
     }
     const prevStep = () => setStep(s => s - 1)
 
@@ -267,7 +329,8 @@ const ApplicationForm = ({ user }) => {
         { title: 'Personal', icon: <User size={18} /> },
         { title: 'Farm', icon: <MapPin size={18} /> },
         { title: 'Spouse', icon: <Users size={18} /> },
-        { title: 'Documents', icon: <Upload size={18} /> }
+        { title: 'Documents', icon: <Upload size={18} /> },
+        { title: 'Review', icon: <FileCheck size={18} /> }
     ]
 
     return (
@@ -314,21 +377,15 @@ const ApplicationForm = ({ user }) => {
                                 <div className="space-y-6">
                                     <div className="flex justify-between items-center mb-6">
                                         <h3 className="text-2xl font-bold">Personal Profile</h3>
-                                        {!isVerified && (
-                                            <button 
-                                                type="button" 
-                                                onClick={handleVerifyID}
-                                                disabled={verifying}
-                                                className="btn bg-blue-600 text-white hover:bg-blue-700 text-sm flex items-center gap-2"
-                                            >
-                                                {verifying ? 'Verifying...' : <><FileCheck size={16} /> Verify & Fetch Data</>}
-                                            </button>
-                                        )}
-                                        {isVerified && (
+                                        {verifying ? (
+                                            <div className="flex items-center gap-2 text-blue-600 font-bold text-sm bg-blue-50 px-3 py-1 rounded-full border border-blue-200 animate-pulse">
+                                                <FileCheck size={16} className="animate-spin" /> Verifying with Registrar General...
+                                            </div>
+                                        ) : isVerified ? (
                                             <div className="flex items-center gap-2 text-emerald-600 font-bold text-sm bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
                                                 <FileCheck size={16} /> Identity Verified
                                             </div>
-                                        )}
+                                        ) : null}
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
@@ -340,6 +397,7 @@ const ApplicationForm = ({ user }) => {
                                                 <option value="Miss">Miss</option>
                                                 <option value="Ms">Ms</option>
                                                 <option value="Dr">Dr</option>
+                                                <option value="Engineer">Engineer</option>
                                             </select>
                                         </div>
                                         <div>
@@ -459,36 +517,6 @@ const ApplicationForm = ({ user }) => {
                                             <label className="block text-sm font-medium mb-1">Contact Address *</label>
                                             <textarea {...register('contact_address', { required: true })} className="input min-h-[80px]" placeholder="Full residential address" />
                                         </div>
-                                        {/* <div>
-                                            <label className="block text-sm font-medium mb-1">Email Address *</label>
-                                            <input
-                                                type="email"
-                                                readOnly
-                                                {...register('email', {
-                                                    required: 'Email is required',
-                                                    pattern: {
-                                                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                                        message: 'Please enter a valid email address'
-                                                    },
-                                                    validate: (value) => {
-                                                        if (user && user.email && value.toLowerCase() !== user.email.toLowerCase()) {
-                                                            return 'Email must match your registered account address';
-                                                        }
-                                                        return true;
-                                                    }
-                                                })}
-                                                className={`input bg-gray-100 cursor-not-allowed ${errors.email ? 'border-red-600' : ''}`}
-                                                placeholder="your@email.com"
-                                                title="Email address is linked to your account and cannot be changed"
-                                            />
-                                            <p className="text-xs text-gray-500 mt-1">Linked to your registered account</p>
-                                            {errors.email && (
-                                                <p className="field-error">
-                                                    <AlertCircle size={14} />
-                                                    {errors.email.message}
-                                                </p>
-                                            )}
-                                        </div> */}
                                     </div>
 
                                     {/* Farmer Categories */}
@@ -593,16 +621,35 @@ const ApplicationForm = ({ user }) => {
                             {step === 2 && (
                                 <div className="space-y-6">
                                     <h3 className="text-2xl font-bold mb-6">Farm Details</h3>
+                                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                        <div className="bg-primary h-2.5 rounded-full" style={{ width: `${(step / 5) * 100}%` }}></div>
+                                    </div>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">Farm Name *</label>
-                                            <input {...register('farm_name', { required: 'Farm name is required' })} className={`input ${errors.farm_name ? 'border-red-600' : ''}`} />
-                                            {errors.farm_name && (
-                                                <p className="field-error">
-                                                    <AlertCircle size={14} />
-                                                    {errors.farm_name.message}
-                                                </p>
+                                        <div className="md:col-span-2">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <label className="block text-sm font-medium">Property Details *</label>
+                                                <button 
+                                                    type="button" 
+                                                    onClick={handleVerifyProperty}
+                                                    disabled={verifyingProperty}
+                                                    className="btn btn-secondary py-1 px-3 text-xs"
+                                                >
+                                                    {verifyingProperty ? 'Querying SG API...' : 'Verify Property from Lands/SG'}
+                                                </button>
+                                            </div>
+                                            
+                                            {!isSurveyed && isLandVerified && (
+                                                <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-md text-amber-800 text-sm">
+                                                    <p className="font-bold flex items-center">
+                                                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" /></svg>
+                                                        Property Not Surveyed
+                                                    </p>
+                                                    <p>Our records indicate this property has not been surveyed. Your application will be paused after submission. Please visit the Department of Surveyor General (DSG) to make survey payments to avoid delays.</p>
+                                                </div>
                                             )}
+
+                                            <label className="block text-sm font-medium mb-1">Farm Name / Property Description *</label>
+                                            <input {...register('farm_name', { required: 'Farm name is required' })} className={`input ${errors.farm_name ? 'border-red-600' : ''}`} placeholder="e.g. Subdivision A of Farm B" />
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium mb-1">Province *</label>
@@ -737,6 +784,7 @@ const ApplicationForm = ({ user }) => {
                                         <div className="text-center py-12">
                                             <Users className="w-16 h-16 mx-auto text-gray-300 mb-4" />
                                             <h3 className="text-xl font-bold text-gray-400 mb-2">No Spouse Details Required</h3>
+                                            <p className="text-gray-600">Step {step} of 5</p>
                                             <p className="text-gray-500">You indicated your marital status as "Single". You can proceed to the next step.</p>
                                         </div>
                                     ) : (
@@ -1005,6 +1053,94 @@ const ApplicationForm = ({ user }) => {
                                 </div>
                             )}
 
+                            {/* Step 5: Review & Payment */}
+                            {step === 5 && (
+                                <div className="space-y-6">
+                                    <h3 className="text-2xl font-bold mb-6">Review & Payment</h3>
+                                    
+                                    <div className="bg-gray-50 p-4 rounded-lg border">
+                                        <h4 className="font-bold mb-4 text-emerald-800">Application Summary</h4>
+                                        <div className="grid grid-cols-2 gap-y-2 text-sm">
+                                            <span className="text-gray-500 text-xs uppercase tracking-wider">Property:</span>
+                                            <span className="font-medium">{watch('farm_name') || 'Not specified'}</span>
+                                            
+                                            <span className="text-gray-500 text-xs uppercase tracking-wider">Extent:</span>
+                                            <span className="font-medium">{watch('farm_extent')} Hectares</span>
+                                            
+                                            <span className="text-gray-500 text-xs uppercase tracking-wider">Survey Status:</span>
+                                            <span className={`font-medium ${isSurveyed ? 'text-green-600' : 'text-amber-600'}`}>
+                                                {isSurveyed ? 'Surveyed' : 'Not Surveyed (DSG Visit Required)'}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="card border-2 border-emerald-100 shadow-lg">
+                                        <div className="p-4 bg-emerald-50 border-b border-emerald-100 flex justify-between items-center">
+                                            <h4 className="font-bold text-emerald-900">Purchase Price Valuation</h4>
+                                            {isCalculatingPrice && <div className="text-xs text-emerald-600 animate-pulse">Calculating...</div>}
+                                        </div>
+                                        <div className="p-6 space-y-4">
+                                            {priceData ? (
+                                                <>
+                                                    <div className="flex justify-between text-lg">
+                                                        <span className="text-gray-600">Base Price:</span>
+                                                        <span className="font-mono">${priceData.base_price?.toLocaleString()}</span>
+                                                    </div>
+                                                    {priceData.discounts && priceData.discounts.map((d, i) => (
+                                                        <div key={i} className="flex justify-between text-sm text-green-600 font-medium">
+                                                            <span>{d.reason}:</span>
+                                                            <span>-${d.amount?.toLocaleString()} ({d.percentage}%)</span>
+                                                        </div>
+                                                    ))}
+                                                    <div className="border-t pt-4 mt-4 flex justify-between text-2xl font-bold text-emerald-900">
+                                                        <span>Final Purchase Price:</span>
+                                                        <span className="font-mono">${priceData.final_price?.toLocaleString()}</span>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <div className="text-center py-4 text-gray-500">
+                                                    Click 'Next' from Step 4 or trigger calculation.
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-4">
+                                        <h4 className="font-bold text-gray-700">Select Payment Method</h4>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <label className={`flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all ${watch('payment_method') === 'Cash' || !watch('payment_method') ? 'border-emerald-600 bg-emerald-50 shadow-md' : 'border-gray-100 hover:border-gray-300'}`}>
+                                                <input type="radio" value="Cash" {...register('payment_method')} className="hidden" />
+                                                <div className="text-emerald-700 font-bold">CASH PAYMENT</div>
+                                                <div className="text-[10px] text-emerald-600 font-bold uppercase tracking-tighter bg-emerald-100 px-2 py-0.5 rounded">15% Incentive Applied</div>
+                                            </label>
+                                            <label className={`flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all ${watch('payment_method') === 'Mortgage' ? 'border-blue-600 bg-blue-50 shadow-md' : 'border-gray-100 hover:border-gray-300'}`}>
+                                                <input type="radio" value="Mortgage" {...register('payment_method')} className="hidden" />
+                                                <div className="text-blue-700 font-bold">MORTGAGE</div>
+                                                <div className="text-[10px] text-blue-600 font-bold uppercase tracking-tighter bg-blue-100 px-2 py-0.5 rounded">Financing Available</div>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {watch('payment_method') === 'Mortgage' && (
+                                        <div className="p-6 bg-blue-50 rounded-xl border border-blue-200 animate-in fade-in duration-300">
+                                            <label className="block text-sm font-bold text-blue-800 mb-4 flex items-center gap-2">
+                                                <MapPin className="text-blue-600" size={18} />
+                                                Select Participating Bank (via Dokuma)
+                                            </label>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                {['CBZ Bank', 'CABS', 'FBC Bank', 'Nedbank', 'Stanbic Bank'].map(bank => (
+                                                    <label key={bank} className="flex items-center gap-3 p-3 bg-white border border-blue-100 rounded-lg hover:border-blue-400 Transition-all cursor-pointer">
+                                                        <input type="radio" value={bank} {...register('selected_bank', { required: watch('payment_method') === 'Mortgage' })} />
+                                                        <span className="text-sm font-medium text-gray-700">{bank}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                            {errors.selected_bank && <p className="text-red-600 text-xs mt-2 font-medium">Please select a bank for your mortgage.</p>}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
                             {/* Navigation Buttons */}
                             <div className="flex justify-between mt-12 border-t pt-6">
                                 <button
@@ -1015,7 +1151,7 @@ const ApplicationForm = ({ user }) => {
                                 >
                                     <ChevronLeft size={18} /> Back
                                 </button>
-                                {step < 4 && (
+                                {step < 5 && (
                                     <button
                                         key="next-btn"
                                         type="button"
@@ -1025,7 +1161,7 @@ const ApplicationForm = ({ user }) => {
                                         Next <ChevronRight size={18} />
                                     </button>
                                 )}
-                                {step === 4 && (
+                                {step === 5 && (
                                     <button
                                         key="submit-btn"
                                         type="button"
@@ -1033,7 +1169,7 @@ const ApplicationForm = ({ user }) => {
                                         disabled={isSubmitting}
                                         className="btn btn-primary bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50"
                                     >
-                                        {isSubmitting ? 'Submitting...' : 'Submit Application'}
+                                        {isSubmitting ? 'Submitting...' : 'Submit Final Application'}
                                     </button>
                                 )}
                             </div>

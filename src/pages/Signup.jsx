@@ -89,12 +89,12 @@ const Signup = () => {
                             />
                         </div>
 
-                        {/* Last Name */}
+                        {/* Surname */}
                         <div>
                             <label className="block text-sm font-medium mb-1">Surname</label>
                             <input
                                 className="input"
-                                {...register('last_name', { required: 'Required' })}
+                                {...register('surname', { required: 'Required' })}
                                 placeholder="Surname"
                             />
                         </div>
@@ -106,7 +106,7 @@ const Signup = () => {
                             <label className="block text-sm font-medium mb-1">Phone Number</label>
                             <input
                                 className="input"
-                                {...register('telephone', { required: 'Required' })}
+                                {...register('phone_number', { required: 'Required' })}
                                 placeholder="+263..."
                             />
                         </div>

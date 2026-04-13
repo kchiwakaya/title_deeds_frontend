@@ -23,8 +23,8 @@ const useUsers = () => {
             const data = await userService.fetchUsers()
             const mappedUsers = data.map(u => ({
                 id: u.id,
-                username: u.username,
-                name: `${u.first_name} ${u.last_name}`,
+                national_id: u.national_id,
+                name: u.name || `${u.first_name || ''} ${u.surname || ''}`.trim() || u.national_id,
                 email: u.email,
                 role: u.role,
                 is_active: u.is_active,

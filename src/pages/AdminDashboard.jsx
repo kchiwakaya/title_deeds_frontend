@@ -31,10 +31,10 @@ const AdminDashboard = ({ user }) => {
     } = useUsers()
 
     const [formData, setFormData] = useState({
-        username: '',
+        national_id: '',
         email: '',
         first_name: '',
-        last_name: '',
+        surname: '',
         password: '',
         role: ''
     })
@@ -61,11 +61,11 @@ const AdminDashboard = ({ user }) => {
                 const updateData = { ...formData }
                 if (!updateData.password) delete updateData.password
                 await updateUser(editingUser.id, updateData)
-                setSuccessMessage(`User ${formData.username} updated successfully!`)
+                setSuccessMessage(`User ${formData.national_id} updated successfully!`)
             } else {
                 // Create new user
                 await createUser(formData)
-                setSuccessMessage(`User ${formData.username} registered successfully!`)
+                setSuccessMessage(`User ${formData.national_id} registered successfully!`)
             }
 
             setTimeout(() => {
@@ -94,15 +94,15 @@ const AdminDashboard = ({ user }) => {
     }
 
     const resetForm = () => {
-        setFormData({ username: '', email: '', first_name: '', last_name: '', password: '', role: '' })
+        setFormData({ national_id: '', email: '', first_name: '', surname: '', password: '', role: '' })
     }
 
     const handleEdit = (user) => {
         setEditingUser(user)
         setFormData({
-            username: user.username,
+            national_id: user.national_id,
             first_name: user.name.split(' ')[0],
-            last_name: user.name.split(' ').slice(1).join(' '),
+            surname: user.name.split(' ').slice(1).join(' '),
             email: user.email,
             role: user.role,
             password: ''
@@ -129,7 +129,7 @@ const AdminDashboard = ({ user }) => {
 
         try {
             await deleteUser(user.id)
-            setSuccessMessage(`User ${user.username} deleted successfully.`)
+            setSuccessMessage(`User ${user.national_id} deleted successfully.`)
             setTimeout(() => setSuccessMessage(''), 3000)
         } catch (err) {
             console.error('Delete user error:', err)
@@ -259,7 +259,7 @@ const AdminDashboard = ({ user }) => {
                                                             {userItem.is_active ? 'Active' : 'Inactive'}
                                                         </span>
                                                     </div>
-                                                    <div className="text-xs text-gray-500">@{userItem.username}</div>
+                                                    <div className="text-xs text-gray-500">#{userItem.national_id}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -343,23 +343,23 @@ const AdminDashboard = ({ user }) => {
                             <input
                                 required
                                 className="input"
-                                value={formData.last_name}
-                                onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                                value={formData.surname}
+                                onChange={(e) => setFormData({ ...formData, surname: e.target.value })}
                                 placeholder="Doe"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium mb-1">Username</label>
+                        <label className="block text-sm font-medium mb-1">National ID</label>
                         <div className="relative">
                             <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <input
                                 required
                                 className="input pl-10"
-                                value={formData.username}
-                                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                                placeholder="johndoe"
+                                value={formData.national_id}
+                                onChange={(e) => setFormData({ ...formData, national_id: e.target.value })}
+                                placeholder="00-0000000X-00"
                                 disabled={!!editingUser}
                             />
                         </div>
