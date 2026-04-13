@@ -172,13 +172,35 @@ const ApplicationForm = ({ user }) => {
                 sex: data.gender,
                 marital_status: data.marital_status,
                 title: data.title,
-                contact_address: data.residential_address
+                contact_address: data.residential_address,
+                is_war_veteran: data.is_war_veteran,
+                war_vet_number: data.war_vet_number
             });
             
             setIsVerified(true);
         } catch (err) {
             console.error('Verification error:', err);
-            const errorMsg = err.response?.data?.error || err.response?.data?.detail || 'Verification failed. Please refer to the Registrar General office.';
+            const respData = err.response?.data;
+            let errorMsg = 'Verification failed. Please refer to the Registrar General office.';
+            if (respData) {
+                if (typeof respData === 'string') {
+                    errorMsg = respData;
+                } else if (respData.error) {
+                    errorMsg = respData.error;
+                } else if (respData.detail) {
+                    errorMsg = respData.detail;
+                } else if (respData.message) {
+                    errorMsg = respData.message;
+                } else {
+                    const vals = Object.values(respData);
+                    if (vals.length > 0) {
+                        const first = vals[0];
+                        if (Array.isArray(first)) errorMsg = first.join(' ');
+                        else if (typeof first === 'string') errorMsg = first;
+                        else errorMsg = JSON.stringify(respData);
+                    }
+                }
+            }
             setError(errorMsg);
         } finally {
             setVerifying(false);
