@@ -33,7 +33,7 @@ describe('ZLCInterface', () => {
             />
         )
 
-        expect(screen.getByText(/ZLC Officer/i)).toBeInTheDocument()
+        expect(screen.getByText(/ZLC - Dispute Verification/i)).toBeInTheDocument()
         expect(screen.getByText('John Doe')).toBeInTheDocument()
     })
 
@@ -54,8 +54,7 @@ describe('ZLCInterface', () => {
 
         await waitFor(() => {
             expect(axios.post).toHaveBeenCalledWith(
-                `/api/applications/${mockSelectedApp.id}/verify_zlc_clear/`,
-                expect.any(Object)
+                `/api/applications/${mockSelectedApp.id}/verify_zlc_clear/`
             )
             expect(mockOnSuccess).toHaveBeenCalled()
         })
@@ -114,11 +113,7 @@ describe('ZLCInterface', () => {
         fireEvent.click(flagDisputeButton)
 
         const submitButton = screen.getByText(/Confirm Dispute Flag/i)
-        fireEvent.click(submitButton)
-
-        await waitFor(() => {
-            expect(mockOnError).toHaveBeenCalledWith('Please select dispute type and provide details')
-        })
+        expect(submitButton).toBeDisabled()
     })
 
     it('handles API error gracefully', async () => {

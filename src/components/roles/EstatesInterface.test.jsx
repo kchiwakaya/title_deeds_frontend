@@ -33,7 +33,7 @@ describe('EstatesInterface', () => {
             />
         )
 
-        expect(screen.getByText(/Estates Officer/i)).toBeInTheDocument()
+        expect(screen.getByText(/Estates - Form Verification/i)).toBeInTheDocument()
         expect(screen.getByText('John Doe')).toBeInTheDocument()
     })
 
@@ -49,7 +49,7 @@ describe('EstatesInterface', () => {
             />
         )
 
-        const verifyButton = screen.getByText(/Verify/i)
+        const verifyButton = screen.getByText(/Verify Form - Details Correct/i)
         fireEvent.click(verifyButton)
 
         await waitFor(() => {
@@ -108,11 +108,7 @@ describe('EstatesInterface', () => {
         fireEvent.click(requestCorrectionButton)
 
         const sendButton = screen.getByText(/Send Correction Request/i)
-        fireEvent.click(sendButton)
-
-        await waitFor(() => {
-            expect(mockOnError).toHaveBeenCalledWith('Please provide correction notes')
-        })
+        expect(sendButton).toBeDisabled()
     })
 
     it('handles API error gracefully', async () => {
@@ -129,7 +125,7 @@ describe('EstatesInterface', () => {
             />
         )
 
-        const verifyButton = screen.getByText(/Verify/i)
+        const verifyButton = screen.getByText(/Verify Form - Details Correct/i)
         fireEvent.click(verifyButton)
 
         await waitFor(() => {

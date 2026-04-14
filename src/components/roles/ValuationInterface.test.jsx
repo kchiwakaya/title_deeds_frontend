@@ -48,7 +48,7 @@ describe('ValuationInterface', () => {
             />
         )
 
-        const input = screen.getByPlaceholderText(/Enter valuation amount/i)
+        const input = screen.getByPlaceholderText(/0.00/i)
         fireEvent.change(input, { target: { value: '50000' } })
         expect(input.value).toBe('50000')
     })
@@ -63,7 +63,7 @@ describe('ValuationInterface', () => {
             />
         )
 
-        const textarea = screen.getByPlaceholderText(/Add valuation notes/i)
+        const textarea = screen.getByPlaceholderText(/Add notes about the valuation methodology/i)
         fireEvent.change(textarea, { target: { value: 'Test notes' } })
         expect(textarea.value).toBe('Test notes')
     })
@@ -80,7 +80,7 @@ describe('ValuationInterface', () => {
             />
         )
 
-        const input = screen.getByPlaceholderText(/Enter valuation amount/i)
+        const input = screen.getByPlaceholderText(/0.00/i)
         fireEvent.change(input, { target: { value: '50000' } })
 
         const submitButton = screen.getByText(/Confirm Valuation/i)
@@ -107,12 +107,8 @@ describe('ValuationInterface', () => {
             />
         )
 
-        const submitButton = screen.getByText(/Set Valuation/i)
-        fireEvent.click(submitButton)
-
-        await waitFor(() => {
-            expect(mockOnError).toHaveBeenCalledWith('Valuation amount is required')
-        })
+        const submitButton = screen.getByText(/Confirm Valuation/i)
+        expect(submitButton).toBeDisabled()
     })
 
     it('handles API error gracefully', async () => {
@@ -129,7 +125,7 @@ describe('ValuationInterface', () => {
             />
         )
 
-        const input = screen.getByPlaceholderText(/Enter valuation amount/i)
+        const input = screen.getByPlaceholderText(/0.00/i)
         fireEvent.change(input, { target: { value: '50000' } })
 
         const submitButton = screen.getByText(/Confirm Valuation/i)

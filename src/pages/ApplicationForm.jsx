@@ -32,7 +32,8 @@ const ApplicationForm = ({ user }) => {
         if (user && !editId) {
             reset({
                 first_name: user.first_name || '',
-                surname: user.last_name || '',
+                surname: user.surname || '',
+                national_id: user.national_id || '',
                 email: user.email || ''
             })
         }
@@ -424,7 +425,11 @@ const ApplicationForm = ({ user }) => {
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium mb-1">Gender *</label>
-                                            <select {...register('sex', { required: true })} className="input">
+                                            <select 
+                                                {...register('sex', { required: true })} 
+                                                className={`input ${isVerified ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                                disabled={isVerified}
+                                            >
                                                 <option value="">Select...</option>
                                                 <option value="Male">Male</option>
                                                 <option value="Female">Female</option>
@@ -464,7 +469,8 @@ const ApplicationForm = ({ user }) => {
                                                         }
                                                     }
                                                 })}
-                                                className={`input ${errors.date_of_birth ? 'border-red-600' : ''}`}
+                                                readOnly={isVerified}
+                                                className={`input ${isVerified ? 'bg-gray-100 cursor-not-allowed' : ''} ${errors.date_of_birth ? 'border-red-600' : ''}`}
                                             />
                                             {errors.date_of_birth && (
                                                 <p className="field-error">
@@ -495,18 +501,6 @@ const ApplicationForm = ({ user }) => {
                                                     {errors.national_id.message}
                                                 </p>
                                             )}
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">Citizenship *</label>
-                                            <select {...register('citizenship', { required: true })} className="input">
-                                                <option value="">Select...</option>
-                                                <option value="Zimbabwean">Zimbabwean</option>
-                                                <option value="South African">South African</option>
-                                                <option value="Zambian">Zambian</option>
-                                                <option value="Mozambican">Mozambican</option>
-                                                <option value="Botswanan">Botswanan</option>
-                                                <option value="Other">Other</option>
-                                            </select>
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium mb-1">Contact Number *</label>

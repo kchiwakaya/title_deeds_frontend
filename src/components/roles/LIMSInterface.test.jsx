@@ -34,7 +34,7 @@ describe('LIMSInterface', () => {
             />
         )
 
-        expect(screen.getByText(/LIMS Officer/i)).toBeInTheDocument()
+        expect(screen.getByText('LIMS Verification')).toBeInTheDocument()
         expect(screen.getByText('John Doe')).toBeInTheDocument()
     })
 
@@ -55,8 +55,7 @@ describe('LIMSInterface', () => {
 
         await waitFor(() => {
             expect(axios.post).toHaveBeenCalledWith(
-                `/api/applications/${mockSelectedApp.id}/verify_lims/`,
-                expect.any(Object)
+                `/api/applications/${mockSelectedApp.id}/verify_lims/`
             )
             expect(mockOnSuccess).toHaveBeenCalled()
         })
@@ -75,7 +74,7 @@ describe('LIMSInterface', () => {
         )
 
         // Switch to reject mode
-        const rejectButton = screen.getByText(/Reject/i)
+        const rejectButton = screen.getByText(/Reject Application/i)
         fireEvent.click(rejectButton)
 
         // Select rejection type
@@ -106,15 +105,11 @@ describe('LIMSInterface', () => {
             />
         )
 
-        const rejectButton = screen.getByText(/Reject/i)
+        const rejectButton = screen.getByText(/Reject Application/i)
         fireEvent.click(rejectButton)
 
         const submitButton = screen.getByText(/Confirm Rejection/i)
-        fireEvent.click(submitButton)
-
-        await waitFor(() => {
-            expect(mockOnError).toHaveBeenCalledWith('Please select a rejection reason')
-        })
+        expect(submitButton).toBeDisabled()
     })
 
     it('handles API error gracefully', async () => {

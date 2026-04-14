@@ -32,7 +32,7 @@ describe('AccountsInterface', () => {
             />
         )
 
-        expect(screen.getByText(/Accounts Officer/i)).toBeInTheDocument()
+        expect(screen.getByText(/Accounts - Fee Confirmation/i)).toBeInTheDocument()
         expect(screen.getByText('John Doe')).toBeInTheDocument()
     })
 
@@ -53,8 +53,7 @@ describe('AccountsInterface', () => {
 
         await waitFor(() => {
             expect(axios.post).toHaveBeenCalledWith(
-                `/api/applications/${mockSelectedApp.id}/confirm_application_fee/`,
-                expect.any(Object)
+                `/api/applications/${mockSelectedApp.id}/confirm_application_fee/`
             )
             expect(mockOnSuccess).toHaveBeenCalled()
         })
@@ -72,13 +71,12 @@ describe('AccountsInterface', () => {
             />
         )
 
-        const unpaidButton = screen.getByText(/Mark as Unpaid/i)
+        const unpaidButton = screen.getByText(/Fee Not Paid/i)
         fireEvent.click(unpaidButton)
 
         await waitFor(() => {
             expect(axios.post).toHaveBeenCalledWith(
-                `/api/applications/${mockSelectedApp.id}/mark_fee_unpaid/`,
-                expect.any(Object)
+                `/api/applications/${mockSelectedApp.id}/mark_fee_unpaid/`
             )
             expect(mockOnSuccess).toHaveBeenCalled()
         })

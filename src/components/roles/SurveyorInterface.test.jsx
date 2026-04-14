@@ -32,7 +32,7 @@ describe('SurveyorInterface', () => {
             />
         )
 
-        expect(screen.getByText(/Surveyor General/i)).toBeInTheDocument()
+        expect(screen.getByText('Surveyor General - Survey Verification')).toBeInTheDocument()
         expect(screen.getByText('John Doe')).toBeInTheDocument()
     })
 
@@ -46,8 +46,11 @@ describe('SurveyorInterface', () => {
             />
         )
 
-        const nameInput = screen.getByPlaceholderText(/Enter official farm name/i)
-        const hectarageInput = screen.getByPlaceholderText(/Enter official hectarage/i)
+        const confirmModeButton = screen.getByText(/Farm Is Surveyed/i)
+        fireEvent.click(confirmModeButton)
+
+        const nameInput = screen.getByPlaceholderText(/Enter official surveyed farm name/i)
+        const hectarageInput = screen.getByPlaceholderText(/Enter exact hectarage from survey/i)
 
         fireEvent.change(nameInput, { target: { value: 'Official Farm' } })
         fireEvent.change(hectarageInput, { target: { value: '99.5' } })
@@ -68,13 +71,16 @@ describe('SurveyorInterface', () => {
             />
         )
 
-        const nameInput = screen.getByPlaceholderText(/Enter official farm name/i)
-        const hectarageInput = screen.getByPlaceholderText(/Enter official hectarage/i)
+        const confirmModeButton = screen.getByText(/Farm Is Surveyed/i)
+        fireEvent.click(confirmModeButton)
+
+        const nameInput = screen.getByPlaceholderText(/Enter official surveyed farm name/i)
+        const hectarageInput = screen.getByPlaceholderText(/Enter exact hectarage from survey/i)
 
         fireEvent.change(nameInput, { target: { value: 'Official Farm' } })
         fireEvent.change(hectarageInput, { target: { value: '99.5' } })
 
-        const confirmButton = screen.getByText(/Confirm Survey/i)
+        const confirmButton = screen.getByText(/Confirm Survey Completed/i)
         fireEvent.click(confirmButton)
 
         await waitFor(() => {
@@ -82,7 +88,7 @@ describe('SurveyorInterface', () => {
                 `/api/applications/${mockSelectedApp.id}/confirm_survey_completed/`,
                 expect.objectContaining({
                     official_farm_name: 'Official Farm',
-                    official_hectarage: '99.5'
+                    official_hectarage: 99.5
                 })
             )
             expect(mockOnSuccess).toHaveBeenCalled()
@@ -101,17 +107,20 @@ describe('SurveyorInterface', () => {
             />
         )
 
-        const feeInput = screen.getByPlaceholderText(/Survey fee amount/i)
+        const requestModeButton = screen.getByText(/Request Survey/i)
+        fireEvent.click(requestModeButton)
+
+        const feeInput = screen.getByPlaceholderText(/Enter survey fee amount if known/i)
         fireEvent.change(feeInput, { target: { value: '5000' } })
 
-        const requestButton = screen.getByText(/Request Survey/i)
+        const requestButton = screen.getByText(/Send Survey Request/i)
         fireEvent.click(requestButton)
 
         await waitFor(() => {
             expect(axios.post).toHaveBeenCalledWith(
                 `/api/applications/${mockSelectedApp.id}/request_survey/`,
                 expect.objectContaining({
-                    survey_fee_amount: '5000'
+                    survey_fee_amount: 5000
                 })
             )
             expect(mockOnSuccess).toHaveBeenCalled()
@@ -128,12 +137,14 @@ describe('SurveyorInterface', () => {
             />
         )
 
-        const confirmButton = screen.getByText(/Confirm Survey/i)
-        fireEvent.click(confirmButton)
+        const confirmModeButton = screen.getByText(/Farm Is Surveyed/i)
+        fireEvent.click(confirmModeButton)
 
-        await waitFor(() => {
-            expect(mockOnError).toHaveBeenCalledWith('Official farm name and hectarage are required')
-        })
+        const nameInput = screen.getByPlaceholderText(/Enter official surveyed farm name/i)
+        fireEvent.change(nameInput, { target: { value: '' } })
+
+        const confirmButton = screen.getByText(/Confirm Survey Completed/i)
+        expect(confirmButton).toBeDisabled()
     })
 
     it('handles API error gracefully', async () => {
@@ -150,13 +161,16 @@ describe('SurveyorInterface', () => {
             />
         )
 
-        const nameInput = screen.getByPlaceholderText(/Enter official farm name/i)
-        const hectarageInput = screen.getByPlaceholderText(/Enter official hectarage/i)
+        const confirmModeButton = screen.getByText(/Farm Is Surveyed/i)
+        fireEvent.click(confirmModeButton)
+
+        const nameInput = screen.getByPlaceholderText(/Enter official surveyed farm name/i)
+        const hectarageInput = screen.getByPlaceholderText(/Enter exact hectarage from survey/i)
 
         fireEvent.change(nameInput, { target: { value: 'Official Farm' } })
         fireEvent.change(hectarageInput, { target: { value: '99.5' } })
 
-        const confirmButton = screen.getByText(/Confirm Survey/i)
+        const confirmButton = screen.getByText(/Confirm Survey Completed/i)
         fireEvent.click(confirmButton)
 
         await waitFor(() => {

@@ -458,7 +458,15 @@ const OfficerDashboard = ({ user }) => {
                                         </div>
                                         <div>
                                             <label className="text-xs text-gray-500 uppercase">National ID</label>
-                                            <p className="font-medium text-gray-900">{selectedApp.national_id}</p>
+                                            <p className="font-medium text-gray-900">{selectedApp.farmer_national_id}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-gray-500 uppercase">Gender</label>
+                                            <p className="font-medium text-gray-900">{selectedApp.farmer_gender || 'Not specified'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-gray-500 uppercase">Date of Birth</label>
+                                            <p className="font-medium text-gray-900">{selectedApp.farmer_dob || 'Not specified'}</p>
                                         </div>
                                         <div>
                                             <label className="text-xs text-gray-500 uppercase">Email</label>

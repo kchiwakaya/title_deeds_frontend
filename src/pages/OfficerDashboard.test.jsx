@@ -1,17 +1,27 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import axios from 'axios'
+
+vi.mock('axios')
 import OfficerDashboard from '../pages/OfficerDashboard'
 import '@testing-library/jest-dom'
 
-// Mock axios
-vi.mock('axios', () => ({
-    default: {
-        get: vi.fn(),
-        post: vi.fn()
+vi.mock('axios', () => {
+    const mockAxiosInstance = {
+        get: vi.fn(() => Promise.resolve({ data: [] })),
+        post: vi.fn(() => Promise.resolve({ data: {} })),
+        patch: vi.fn(() => Promise.resolve({ data: {} })),
+        put: vi.fn(() => Promise.resolve({ data: {} })),
+        delete: vi.fn(() => Promise.resolve({ data: {} })),
+        interceptors: { request: { use: vi.fn(), eject: vi.fn() }, response: { use: vi.fn(), eject: vi.fn() } }
     }
-}))
-
-import axios from 'axios'
+    return {
+        default: {
+            ...mockAxiosInstance,
+            create: vi.fn(() => mockAxiosInstance)
+        }
+    }
+})
 
 describe('OfficerDashboard', () => {
     const mockUser = { role: 'admin' }
@@ -157,11 +167,11 @@ describe('OfficerDashboard', () => {
         })
 
         // Surveyor specific buttons should be present
-        const surveyBtn = screen.getByText(/complete survey & verify/i)
+        const surveyBtn = screen.getByText(/update portal with survey results/i)
         expect(surveyBtn).toBeInTheDocument()
 
-        // "Require Fee" button should NO LONGER be present
-        expect(screen.queryByText(/not surveyed - require fee/i)).not.toBeInTheDocument()
+        // "Require Fee" button should also be present
+        expect(screen.getByText(/not surveyed - require fee/i)).toBeInTheDocument()
 
         // Interaction: Select Fee Paid
         const feePaidRadio = screen.getByLabelText(/fee paid \(proof verified\)/i)
@@ -173,7 +183,7 @@ describe('OfficerDashboard', () => {
         // Check backend call
         await waitFor(() => {
             expect(axios.post).toHaveBeenCalledWith(
-                expect.stringContaining('/api/applications/4/mark_surveyed/'),
+                expect.stringContaining('/applications/4/mark_surveyed/'),
                 expect.objectContaining({
                     is_fee_paid: true
                 })

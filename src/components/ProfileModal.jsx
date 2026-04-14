@@ -5,7 +5,9 @@ import { X, Save, User, Mail, Phone, MapPin, Briefcase } from 'lucide-react';
 const ProfileModal = ({ isOpen, onClose, user, onUpdateUser }) => {
     const [formData, setFormData] = useState({
         first_name: '',
-        last_name: '',
+        surname: '',
+        national_id: '',
+        gender: '',
         email: '',
         telephone: '',
         contact_address: '',
@@ -55,8 +57,8 @@ const ProfileModal = ({ isOpen, onClose, user, onUpdateUser }) => {
 
             // Construct new display name
             const firstName = response.data.first_name || '';
-            const lastName = response.data.last_name || '';
-            let newName = `${firstName} ${lastName}`.trim();
+            const surname = response.data.surname || '';
+            let newName = `${firstName} ${surname}`.trim();
             if (!newName) newName = response.data.username;
 
             // Notify parent to update user state
@@ -141,21 +143,21 @@ const ProfileModal = ({ isOpen, onClose, user, onUpdateUser }) => {
                                     <input
                                         type="text"
                                         name="first_name"
-                                        value={formData.first_name}
+                                        value={formData.first_name || ''}
                                         onChange={handleChange}
-                                        className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500 p-2 border"
-                                        required
+                                        className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500 p-2 border bg-gray-100 cursor-not-allowed"
+                                        readOnly
                                     />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Surname</label>
                                     <input
                                         type="text"
-                                        name="last_name"
-                                        value={formData.last_name}
+                                        name="surname"
+                                        value={formData.surname || ''}
                                         onChange={handleChange}
-                                        className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500 p-2 border"
-                                        required
+                                        className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500 p-2 border bg-gray-100 cursor-not-allowed"
+                                        readOnly
                                     />
                                 </div>
                                 {/* Full width for DOB */}
@@ -166,10 +168,38 @@ const ProfileModal = ({ isOpen, onClose, user, onUpdateUser }) => {
                                         name="date_of_birth"
                                         value={formData.date_of_birth || ''}
                                         onChange={handleDateChange}
-                                        className={`w-full rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500 p-2 border ${error && error.includes('21') ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
+                                        disabled={formData.role === 'farmer'}
+                                        className={`w-full rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500 p-2 border ${formData.role === 'farmer' ? 'bg-gray-100 cursor-not-allowed text-gray-500' : ''} ${error && error.includes('21') ? 'border-red-500 bg-red-50' : 'border-gray-300'}`}
                                         required
                                     />
                                     {error && error.includes('21') && <p className="text-xs text-red-600 mt-1">{error}</p>}
+                                </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                                        National ID
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="national_id"
+                                        value={formData.national_id || ''}
+                                        readOnly
+                                        className="w-full border-gray-300 rounded-lg shadow-sm bg-gray-100 cursor-not-allowed p-2 border"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                                        Gender
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="gender"
+                                        value={formData.gender || ''}
+                                        readOnly
+                                        className="w-full border-gray-300 rounded-lg shadow-sm bg-gray-100 cursor-not-allowed p-2 border"
+                                    />
                                 </div>
                             </div>
 

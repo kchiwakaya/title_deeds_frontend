@@ -74,7 +74,7 @@ describe('ConveyancerInterface', () => {
         )
 
         // Total should be only valuation amount
-        expect(screen.getByText('$50000.00')).toBeInTheDocument()
+        expect(screen.getAllByText('$50000.00')[0]).toBeInTheDocument()
     })
 
     it('allows entering notes', () => {
@@ -118,7 +118,7 @@ describe('ConveyancerInterface', () => {
             />
         )
 
-        const prepareButton = screen.getByText(/Prepare Agreement/i)
+        const prepareButton = screen.getByText(/Prepare Agreement & Approve/i)
         fireEvent.click(prepareButton)
 
         await waitFor(() => {
@@ -144,7 +144,7 @@ describe('ConveyancerInterface', () => {
             />
         )
 
-        const prepareButton = screen.getByText(/Prepare Agreement/i)
+        const prepareButton = screen.getByText(/Prepare Agreement & Approve/i)
         fireEvent.click(prepareButton)
 
         await waitFor(() => {
@@ -164,7 +164,7 @@ describe('ConveyancerInterface', () => {
             />
         )
 
-        const prepareButton = screen.getByText(/Prepare Agreement/i)
+        const prepareButton = screen.getByText(/Prepare Agreement & Approve/i)
         fireEvent.click(prepareButton)
 
         expect(prepareButton).toBeDisabled()

@@ -1,17 +1,28 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import axios from 'axios'
+
+vi.mock('axios')
 import { BrowserRouter } from 'react-router-dom'
 import ApplicationForm from '../pages/ApplicationForm'
 import '@testing-library/jest-dom'
 
-// Mock axios
-vi.mock('axios', () => ({
-    default: {
+vi.mock('axios', () => {
+    const mockAxiosInstance = {
         get: vi.fn(() => Promise.resolve({ data: [] })),
         post: vi.fn(() => Promise.resolve({ data: {} })),
         patch: vi.fn(() => Promise.resolve({ data: {} })),
+        put: vi.fn(() => Promise.resolve({ data: {} })),
+        delete: vi.fn(() => Promise.resolve({ data: {} })),
+        interceptors: { request: { use: vi.fn(), eject: vi.fn() }, response: { use: vi.fn(), eject: vi.fn() } }
     }
-}))
+    return {
+        default: {
+            ...mockAxiosInstance,
+            create: vi.fn(() => mockAxiosInstance)
+        }
+    }
+})
 
 const renderWithRouter = (component) => {
     return render(
@@ -20,6 +31,23 @@ const renderWithRouter = (component) => {
         </BrowserRouter>
     )
 }
+
+beforeEach(() => {
+    vi.clearAllMocks()
+    axios.get.mockImplementation((url) => {
+        if (url.includes('/users/profile/update/')) {
+            // Return empty data but avoid overwriting marital_status if possible
+            // In the test, we want to control this, but the form resets it.
+            // So we return a default that tests can override or just 'Single'
+            return Promise.resolve({ data: { marital_status: 'Single' } })
+        }
+        if (url.includes('/applications/')) {
+            return Promise.resolve({ data: [] })
+        }
+        return Promise.resolve({ data: {} })
+    })
+    axios.post.mockResolvedValue({ data: {} })
+})
 
 
 
@@ -115,6 +143,12 @@ describe('ApplicationForm - Conditional Spouse Section', () => {
     })
 
     it('should show spouse section when marital status is Married', async () => {
+        axios.get.mockImplementation((url) => {
+            if (url.includes('/users/profile/update/')) {
+                return Promise.resolve({ data: { marital_status: 'Married' } })
+            }
+            return Promise.resolve({ data: [] })
+        })
         renderWithRouter(<ApplicationForm user={{}} />)
 
         // Select marital status as Married
@@ -157,12 +191,12 @@ describe('ApplicationForm - Years of Service', () => {
         renderWithRouter(<ApplicationForm user={{}} />)
 
         // Check Civil Servant checkbox
-        const civilServantCheckbox = screen.getByLabelText(/civil servant/i)
-        fireEvent.click(civilServantCheckbox)
+        const civilServantLabel = screen.getByText(/Civil Servant/i)
+        fireEvent.click(civilServantLabel)
 
-        // Years of Service field should appear
+        // Years in Service field should appear
         await waitFor(() => {
-            const yosLabel = screen.getByText(/Years of Service \*/i)
+            const yosLabel = screen.getByText(/Years in Service \*/i)
             expect(yosLabel).toBeInTheDocument()
             expect(yosLabel.nextElementSibling).toBeInTheDocument()
         })
@@ -172,8 +206,8 @@ describe('ApplicationForm - Years of Service', () => {
         renderWithRouter(<ApplicationForm user={{}} />)
 
         // Check Uniformed Forces checkbox
-        const uniformedCheckbox = screen.getByLabelText(/uniformed forces/i)
-        fireEvent.click(uniformedCheckbox)
+        const uniformedLabel = screen.getByText(/Uniformed Forces/i)
+        fireEvent.click(uniformedLabel)
 
         // Years of Service field should appear
         await waitFor(() => {

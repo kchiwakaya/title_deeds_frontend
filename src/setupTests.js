@@ -1,5 +1,8 @@
 // Setup file for Jest/Vitest
-import { expect, afterEach } from 'vitest'
+import { expect, afterEach, vi } from 'vitest'
+import axios from 'axios'
+
+vi.mock('axios')
 import { cleanup } from '@testing-library/react'
 import '@testing-library/jest-dom'
 

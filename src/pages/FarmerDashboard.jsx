@@ -617,6 +617,28 @@ const FarmerDashboard = ({ user }) => {
                         )}
 
 
+                        <div className="space-y-4">
+                            <h4 className="font-semibold text-gray-900 border-b pb-2">Personal Information</h4>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                                <div>
+                                    <span className="text-gray-500 block uppercase text-[10px] font-bold">Full Name</span>
+                                    <span className="font-medium text-gray-900">{selectedApp.farmer_name} {selectedApp.farmer_surname}</span>
+                                </div>
+                                <div>
+                                    <span className="text-gray-500 block uppercase text-[10px] font-bold">National ID</span>
+                                    <span className="font-medium text-gray-900">{selectedApp.farmer_national_id}</span>
+                                </div>
+                                <div>
+                                    <span className="text-gray-500 block uppercase text-[10px] font-bold">Gender</span>
+                                    <span className="font-medium text-gray-900">{selectedApp.farmer_gender || 'Not specified'}</span>
+                                </div>
+                                <div>
+                                    <span className="text-gray-500 block uppercase text-[10px] font-bold">Date of Birth</span>
+                                    <span className="font-medium text-gray-900">{selectedApp.farmer_dob || 'Not specified'}</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="grid md:grid-cols-2 gap-6">
                             <div className="space-y-4">
                                 <h4 className="font-semibold text-gray-900 border-b pb-2">Farm Information</h4>
