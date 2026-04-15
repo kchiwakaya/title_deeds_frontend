@@ -27,6 +27,7 @@ const ApplicationForm = ({ user }) => {
     const [priceData, setPriceData] = useState(null)
     const [isCalculatingPrice, setIsCalculatingPrice] = useState(false)
     const [pipelineResult, setPipelineResult] = useState(null) // 4-step verification result
+    const [surveyDiagramLink, setSurveyDiagramLink] = useState(null)
 
     // Derived workflow flags from pipeline result
     // true  → RG passed but NOT in Lands DB → farmer enters farm details manually + must upload tenure doc
@@ -71,6 +72,10 @@ const ApplicationForm = ({ user }) => {
                             spouseFields[`spouse_${i}_civil_service_years`] = s.civil_service_years || ''
                         })
                     }
+
+                    setIsLandVerified(true);
+                    setIsSurveyed(app.is_surveyed);
+                    setSurveyDiagramLink(app.survey_diagram_link);
 
                     reset({
                         // --- Personal ---
@@ -205,6 +210,7 @@ const ApplicationForm = ({ user }) => {
             if (sgResult && sgResult.status === 'found') {
                 setIsLandVerified(true);
                 setIsSurveyed(sgResult.is_surveyed);
+                setSurveyDiagramLink(sgResult.diagram_url);
             }
 
             reset(updatedValues);
@@ -578,14 +584,24 @@ const ApplicationForm = ({ user }) => {
                                     {/* Farmer Categories */}
                                     <h4 className="text-lg font-bold mt-8 mb-4 border-t pt-6">Farmer Category (tick all that apply)</h4>
                                     <div className="grid grid-cols-2 gap-3">
-                                        <label className={`flex items-center gap-2 p-3 border rounded hover:bg-gray-50 cursor-pointer`}>
-                                            <input type="checkbox" {...register('is_war_veteran')} className="w-4 h-4" />
+                                        <label className={`flex items-center gap-2 p-3 border rounded ${isVerified ? 'bg-gray-50 cursor-not-allowed opacity-75' : 'hover:bg-gray-50 cursor-pointer'}`}>
+                                            <input 
+                                                type="checkbox" 
+                                                {...register('is_war_veteran')} 
+                                                className="w-4 h-4" 
+                                                disabled={isVerified}
+                                            />
                                             <span className="text-sm font-medium">War Veteran</span>
                                         </label>
                                         {watch('is_war_veteran') && (
                                             <div className="col-span-2 ml-8 -mt-2 mb-2">
                                                 <label className="block text-sm font-medium mb-1">War Veteran Number *</label>
-                                                <input {...register('war_vet_number')} className={`input w-64`} placeholder="Enter War Vet No." />
+                                                <input 
+                                                    {...register('war_vet_number')} 
+                                                    className={`input w-64 ${isVerified ? 'bg-gray-100 cursor-not-allowed' : ''}`} 
+                                                    placeholder="Enter War Vet No." 
+                                                    readOnly={isVerified}
+                                                />
                                             </div>
                                         )}
 
@@ -680,7 +696,6 @@ const ApplicationForm = ({ user }) => {
                                     <div className="w-full bg-gray-200 rounded-full h-2.5">
                                         <div className="bg-primary h-2.5 rounded-full" style={{ width: `${(step / 5) * 100}%` }}></div>
                                     </div>
-
                                     {/* Workflow Banner */}
                                     {isVerified && farmsDbVerified && (
                                         <div className="flex items-start gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-sm text-emerald-800">
@@ -782,7 +797,7 @@ const ApplicationForm = ({ user }) => {
                                                     }
                                                 })}
                                                 className={`input ${errors.arable_area ? 'border-red-600' : ''}`}
-                                                placeholder="Area suitable for crops"
+                                                placeholder="Enter arable area suitable for crops"
                                             />
                                             {errors.arable_area && (
                                                 <p className="field-error">
@@ -793,17 +808,31 @@ const ApplicationForm = ({ user }) => {
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium mb-1">Current Tenure Document Type *</label>
-                                            <select
-                                                {...register('tenure_document_type', { required: true })}
-                                                disabled={farmsDbVerified}
-                                                className={`input ${farmsDbVerified ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                                            >
-                                                <option value="">Select...</option>
-                                                <option value="A1 Permit">A1 Permit</option>
-                                                <option value="A2 Permit">A2 Permit</option>
-                                                <option value="Offer Letter">Offer Letter</option>
-                                                <option value="99 Year Lease">99 Year Lease</option>
-                                            </select>
+                                            <div className="flex gap-2">
+                                                <select
+                                                    {...register('tenure_document_type', { required: true })}
+                                                    disabled={farmsDbVerified}
+                                                    className={`input ${farmsDbVerified ? 'bg-gray-100 cursor-not-allowed' : ''} flex-1`}
+                                                >
+                                                    <option value="">Select...</option>
+                                                    <option value="A1 Permit">A1 Permit</option>
+                                                    <option value="A2 Permit">A2 Permit</option>
+                                                    <option value="Offer Letter">Offer Letter</option>
+                                                    <option value="99 Year Lease">99 Year Lease</option>
+                                                </select>
+                                                {surveyDiagramLink && (
+                                                    <a 
+                                                        href={surveyDiagramLink} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-all font-medium flex items-center gap-2 whitespace-nowrap"
+                                                        title="View Official Survey Diagram"
+                                                    >
+                                                        <MapPin size={16} />
+                                                        View Diagram
+                                                    </a>
+                                                )}
+                                            </div>
                                             {farmsDbVerified && (
                                                 <p className="text-xs text-emerald-600 mt-1">✓ Confirmed from Lands Database</p>
                                             )}
