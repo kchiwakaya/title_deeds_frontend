@@ -297,7 +297,11 @@ const FarmerDashboard = ({ user }) => {
                                     const statusConfig = getStatusConfig(app.status)
                                     return (
                                         <tr key={app.id} className="hover:bg-gray-50 transition">
-                                            <td className="px-4 py-4 text-sm font-mono text-emerald-700 font-bold">#{app.id}</td>
+                                            <td className="px-4 py-4 text-sm font-mono text-emerald-800 font-bold">
+                                                <span className="bg-emerald-50 px-2 py-1 rounded border border-emerald-100">
+                                                    REF-{app.id.substring(0, 6).toUpperCase()}
+                                                </span>
+                                            </td>
                                             <td className="px-4 py-4">
                                                 <p className="font-semibold">{app.farm_name}</p>
                                             </td>
@@ -366,17 +370,27 @@ const FarmerDashboard = ({ user }) => {
             <Modal
                 isOpen={!!selectedApp}
                 onClose={() => setSelectedApp(null)}
-                title={selectedApp ? `Application #${selectedApp.id} - ${selectedApp.farm_name}` : ''}
+                title={selectedApp ? `Application REF-${selectedApp.id.substring(0, 6).toUpperCase()} - ${selectedApp.farm_name}` : ''}
             >
                 {selectedApp && (
                     <div className="space-y-6">
                         {/* Status Banner */}
-                        <div className={`p-4 rounded-lg border ${getStatusConfig(selectedApp.status).color.replace('text-', 'border-').replace('bg-', 'bg-opacity-10 ')}`}>
-                            <div className="flex items-center gap-3">
-                                {getStatusConfig(selectedApp.status).icon}
-                                <div>
-                                    <p className="font-bold text-sm uppercase">Status: {selectedApp.status.replace('_', ' ')}</p>
-                                    <p className="text-xs opacity-90">Last updated: {selectedApp.created_at}</p>
+                        <div className={`p-5 rounded-2xl border border-l-[12px] shadow-md ${getStatusConfig(selectedApp.status).color.replace('text-', 'border-').replace('bg-', 'bg-opacity-20 ')} bg-white relative overflow-hidden`}>
+                            <div className="flex items-center gap-5 relative z-10">
+                                <div className={`p-4 rounded-2xl ${getStatusConfig(selectedApp.status).color.replace('text-', 'bg-').replace('bg-', 'bg-opacity-10 ')} shadow-inner`}>
+                                    {getStatusConfig(selectedApp.status).icon}
+                                </div>
+                                <div className="flex-1">
+                                    <p className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">Application Current Status</p>
+                                    <p className={`font-black text-2xl uppercase tracking-tight leading-none ${getStatusConfig(selectedApp.status).color.split(' ')[0]}`}>
+                                        {selectedApp.status.replace(/_/g, ' ')}
+                                    </p>
+                                    <div className="flex items-center gap-3 mt-2">
+                                        <p className="text-xs font-bold text-gray-400 flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-md border border-gray-100">
+                                            <RefreshCw size={12} className="text-gray-400" />
+                                            Updated: {selectedApp.created_at}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -617,121 +631,149 @@ const FarmerDashboard = ({ user }) => {
                         )}
 
 
-                        <div className="space-y-4">
-                            <h4 className="font-semibold text-gray-900 border-b pb-2">Personal Information</h4>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                                <div>
-                                    <span className="text-gray-500 block uppercase text-[10px] font-bold">Full Name</span>
-                                    <span className="font-medium text-gray-900">{selectedApp.farmer_name} {selectedApp.farmer_surname}</span>
-                                </div>
-                                <div>
-                                    <span className="text-gray-500 block uppercase text-[10px] font-bold">National ID</span>
-                                    <span className="font-medium text-gray-900">{selectedApp.farmer_national_id}</span>
-                                </div>
-                                <div>
-                                    <span className="text-gray-500 block uppercase text-[10px] font-bold">Gender</span>
-                                    <span className="font-medium text-gray-900">{selectedApp.farmer_gender || 'Not specified'}</span>
-                                </div>
-                                <div>
-                                    <span className="text-gray-500 block uppercase text-[10px] font-bold">Date of Birth</span>
-                                    <span className="font-medium text-gray-900">{selectedApp.farmer_dob || 'Not specified'}</span>
-                                </div>
-                            </div>
-                        </div>
-
+                        {/* Information Grid */}
                         <div className="grid md:grid-cols-2 gap-6">
-                            <div className="space-y-4">
-                                <h4 className="font-semibold text-gray-900 border-b pb-2">Farm Information</h4>
-                                <div className="grid grid-cols-2 gap-2 text-sm">
-                                    <span className="text-gray-500">District:</span>
-                                    <span className="font-medium text-gray-900">{selectedApp.district}</span>
-
-                                    <span className="text-gray-500">Plot Number:</span>
-                                    <span className="font-medium text-gray-900">{selectedApp.farm_id || 'Not assigned yet'}</span>
-
-                                    <span className="text-gray-500">Farm Name:</span>
-                                    <span className="font-medium text-gray-900">{selectedApp.farm_name}</span>
-
-                                    <span className="text-gray-500">Extent:</span>
-                                    <span className="font-medium text-gray-900">{selectedApp.farm_extent} Ha</span>
-
-                                    <span className="text-gray-500">Tenure Type:</span>
-                                    <span className="font-medium text-gray-900">{selectedApp.tenure_document_type}</span>
+                            {/* Personal Card */}
+                            <div className="bg-white p-6 rounded-2xl border border-gray-200 border-l-4 border-l-emerald-600 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center gap-2 mb-6 border-b border-gray-50 pb-3">
+                                    <div className="p-1.5 bg-emerald-50 rounded-lg text-emerald-600">
+                                        <Plus size={16} />
+                                    </div>
+                                    <h4 className="font-black text-gray-900 text-xs uppercase tracking-widest">Farmer Identity</h4>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-baseline border-b border-gray-50 pb-2">
+                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Full Name</span>
+                                        <span className="text-sm font-bold text-gray-900">{selectedApp.farmer_name} {selectedApp.farmer_surname}</span>
+                                    </div>
+                                    <div className="flex justify-between items-baseline border-b border-gray-50 pb-2">
+                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">National ID</span>
+                                        <span className="text-sm font-bold text-gray-900">{selectedApp.farmer_national_id}</span>
+                                    </div>
+                                    <div className="flex justify-between items-baseline border-b border-gray-50 pb-2">
+                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Gender</span>
+                                        <span className="text-sm font-bold text-gray-900 capitalize">{selectedApp.farmer_gender || 'Not specified'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-baseline">
+                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">D.O.B</span>
+                                        <span className="text-sm font-bold text-gray-900">{selectedApp.farmer_dob || 'Not specified'}</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <h4 className="font-semibold text-gray-900 border-b pb-2">Payment Details</h4>
-                                <div className="grid grid-cols-2 gap-2 text-sm">
-                                    <span className="text-gray-500">Purchase Price:</span>
-                                    <span className="font-medium text-gray-900">
-                                        {selectedApp.purchase_price ? (
-                                            `$${selectedApp.purchase_price}`
-                                        ) : (
-                                            ['SURVEYED', 'VALUATED'].includes(selectedApp.status) ?
-                                                'Pending Director Approval' :
-                                                'Calculating...'
-                                        )}
-                                    </span>
+                            {/* Property Card */}
+                            <div className="bg-white p-6 rounded-2xl border border-gray-200 border-l-4 border-l-blue-600 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center gap-2 mb-6 border-b border-gray-50 pb-3">
+                                    <div className="p-1.5 bg-blue-50 rounded-lg text-blue-600">
+                                        <Search size={16} />
+                                    </div>
+                                    <h4 className="font-black text-gray-900 text-xs uppercase tracking-widest">Property Intelligence</h4>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-baseline border-b border-gray-50 pb-2">
+                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Farm Name</span>
+                                        <span className="text-sm font-bold text-gray-900">{selectedApp.farm_name}</span>
+                                    </div>
+                                    <div className="flex justify-between items-baseline border-b border-gray-50 pb-2">
+                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">District</span>
+                                        <span className="text-sm font-bold text-gray-900">{selectedApp.district}</span>
+                                    </div>
+                                    <div className="flex justify-between items-baseline border-b border-gray-50 pb-2">
+                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Extent</span>
+                                        <span className="text-sm font-bold text-gray-900">{selectedApp.farm_extent} Hectares</span>
+                                    </div>
+                                    <div className="flex justify-between items-baseline">
+                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Tenure Type</span>
+                                        <div className="text-[10px] font-black px-2 py-1 bg-gray-100 border border-gray-200 rounded text-gray-700">{selectedApp.tenure_document_type}</div>
+                                    </div>
+                                </div>
+                            </div>
 
-                                    <span className="text-gray-500">Payment Plan:</span>
-                                    <span className="font-medium text-gray-900">
-                                        {selectedApp.payment_plan || 'Not set'}
-                                    </span>
-
-                                    <span className="text-gray-500">Bank:</span>
-                                    <span className="font-medium text-gray-900">
-                                        {selectedApp.selected_bank || 'Not set'}
-                                    </span>
+                            {/* Financial Summary Card */}
+                            <div className="bg-white p-6 rounded-2xl border border-gray-200 border-l-4 border-l-amber-500 shadow-md col-span-full transition-all">
+                                <div className="flex items-center gap-2 mb-6 border-b border-gray-50 pb-3">
+                                    <div className="p-1.5 bg-amber-50 rounded-lg text-amber-600">
+                                        <DollarSign size={16} />
+                                    </div>
+                                    <h4 className="font-black text-gray-900 text-xs uppercase tracking-widest">Financial Evaluation</h4>
+                                </div>
+                                <div className="grid md:grid-cols-3 gap-8">
+                                    <div className="group">
+                                        <span className="text-[11px] text-gray-400 font-black uppercase tracking-[0.2em]">Purchase Price</span>
+                                        <p className="text-2xl font-black text-amber-600 tracking-tight mt-1 leading-none">
+                                            {selectedApp.purchase_price ? `$${parseFloat(selectedApp.purchase_price).toLocaleString()}` : (
+                                                ['SURVEYED', 'VALUATED'].includes(selectedApp.status) ? 'Pending Approval' : 'Processing...'
+                                            )}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <span className="text-[11px] text-gray-400 font-black uppercase tracking-[0.2em]">Payment Plan</span>
+                                        <p className="text-sm font-black text-gray-800 uppercase tracking-tight mt-1">{selectedApp.payment_plan || 'NEEDS SELECTION'}</p>
+                                    </div>
+                                    <div>
+                                        <span className="text-[11px] text-gray-400 font-black uppercase tracking-[0.2em]">Finance Partner</span>
+                                        <p className="text-sm font-black text-gray-800 uppercase tracking-tight mt-1">{selectedApp.selected_bank || 'GOVERNMENT CENTRAL'}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="space-y-4">
-                            <h4 className="font-semibold text-gray-900 border-b pb-2">Verification Progress</h4>
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div className={`text-center p-3 rounded bg-gray-50 ${selectedApp.lims_verification_status ? 'border-emerald-500 border' : ''}`}>
-                                    <div className={`w-3 h-3 rounded-full mx-auto mb-2 ${selectedApp.lims_verification_status ? 'bg-emerald-500' : 'bg-gray-300'}`} />
-                                    <span className="text-xs font-bold text-gray-600">LIMS Check</span>
+                        {/* Status Stepper */}
+                        <div className="py-6 bg-gray-50 bg-opacity-30 rounded-2xl border border-gray-100 p-6">
+                            <div className="flex items-center gap-2 mb-8">
+                                <div className="p-1.5 bg-emerald-100 rounded-lg text-emerald-700">
+                                    <RefreshCw size={16} />
                                 </div>
-                                <div className={`text-center p-3 rounded bg-gray-50 ${selectedApp.zlc_verification_status ? 'border-emerald-500 border' : ''}`}>
-                                    <div className={`w-3 h-3 rounded-full mx-auto mb-2 ${selectedApp.zlc_verification_status ? 'bg-emerald-500' : 'bg-gray-300'}`} />
-                                    <span className="text-xs font-bold text-gray-600">ZLC Check</span>
-                                </div>
-                                <div className={`text-center p-3 rounded bg-gray-50 ${selectedApp.is_surveyed ? 'border-emerald-500 border' : ''}`}>
-                                    <div className={`w-3 h-3 rounded-full mx-auto mb-2 ${selectedApp.is_surveyed ? 'bg-emerald-500' : 'bg-gray-300'}`} />
-                                    <span className="text-xs font-bold text-gray-600">Surveyed</span>
-                                </div>
-                                <div className={`text-center p-3 rounded bg-gray-50 ${selectedApp.valuation_approved ? 'border-emerald-500 border' : ''}`}>
-                                    <div className={`w-3 h-3 rounded-full mx-auto mb-2 ${selectedApp.valuation_approved ? 'bg-emerald-500' : 'bg-gray-300'}`} />
-                                    <span className="text-xs font-bold text-gray-600">Valuated</span>
+                                <h4 className="font-black text-gray-900 text-xs uppercase tracking-widest">System Verification Audit</h4>
+                            </div>
+                            
+                            <div className="relative px-4">
+                                {/* Connector Line */}
+                                <div className="absolute top-5 left-8 right-8 h-0.5 bg-gray-200 z-0 border-b border-white border-opacity-50"></div>
+                                
+                                <div className="relative z-10 flex justify-between">
+                                    {[
+                                        { label: 'LIMS AUDIT', status: selectedApp.lims_verification_status },
+                                        { label: 'ZLC AUDIT', status: selectedApp.zlc_verification_status },
+                                        { label: 'SG SURVEY', status: selectedApp.is_surveyed },
+                                        { label: 'VALUATION', status: selectedApp.valuation_approved }
+                                    ].map((step, idx) => (
+                                        <div key={idx} className="flex flex-col items-center gap-3">
+                                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-700 border-2 ${
+                                                step.status 
+                                                ? 'bg-emerald-600 border-emerald-500 text-white shadow-lg shadow-emerald-100 rotate-0' 
+                                                : 'bg-white border-gray-200 text-gray-300'
+                                            }`}>
+                                                {step.status ? <CheckCircle size={24} className="animate-pulse" /> : <div className="w-2.5 h-2.5 rounded-full bg-gray-200" />}
+                                            </div>
+                                            <span className={`text-[10px] font-black uppercase tracking-widest text-center ${step.status ? 'text-emerald-700' : 'text-gray-400'}`}>
+                                                {step.label}
+                                            </span>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
 
-                        {/* FINAL PRICE FOOTER */}
+                        {/* FINAL PRICE BANNER */}
                         {selectedApp.purchase_price && (
-                            <div style={{
-                                marginTop: '1.5rem',
-                                marginBottom: '0.5rem',
-                                display: 'flex',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                padding: '1.25rem 1.5rem',
-                                background: 'linear-gradient(to right, #064e3b, #065f46)',
-                                borderRadius: '0.75rem',
-                                boxShadow: '0 10px 25px rgba(6, 78, 59, 0.3)',
-                                border: '1px solid #047857'
-                            }}>
-                                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <span style={{ fontSize: '0.875rem', fontWeight: '700', color: '#ffffff', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Final Purchase Price</span>
-                                    {selectedApp.is_cash_payment && (
-                                        <span style={{ fontSize: '0.75rem', color: '#a7f3d0', fontWeight: '500', marginTop: '2px' }}>Includes 15% Cash Discount</span>
-                                    )}
+                            <div className="mt-8 p-1 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 shadow-xl overflow-hidden shadow-emerald-200">
+                                <div className="bg-white bg-opacity-10 backdrop-blur-sm p-4 flex justify-between items-center rounded-xl border border-white border-opacity-20">
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-bold text-emerald-50 text-opacity-80 uppercase tracking-widest leading-none mb-1">Final Purchase Value</span>
+                                        <span className="text-xs text-white text-opacity-70 leading-none">
+                                            {selectedApp.is_cash_payment ? 'Includes 15% Cash Discount' : 'Official Approved Amount'}
+                                        </span>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="flex items-center gap-1 text-white">
+                                            <DollarSign size={24} className="text-emerald-300" />
+                                            <span className="text-3xl font-black tracking-tight leading-none">
+                                                {parseFloat(selectedApp.purchase_price).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span style={{ fontSize: '1.875rem', fontWeight: '800', color: '#ffffff', letterSpacing: '-0.025em' }}>
-                                    ${parseFloat(selectedApp.purchase_price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                </span>
                             </div>
                         )}
 

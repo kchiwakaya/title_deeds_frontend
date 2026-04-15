@@ -42,28 +42,48 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl' }) => 
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '1rem'
+                padding: '1rem',
+                animation: 'fadeIn 0.2s ease-out'
             }}
             onClick={onClose}
         >
+            <style>{`
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes modalSlideUp {
+                    from { transform: translateY(20px) scale(0.95); opacity: 0; }
+                    to { transform: translateY(0) scale(1); opacity: 1; }
+                }
+            `}</style>
             <div
                 className={`bg-white rounded-xl shadow-2xl w-full ${maxWidth}`}
                 style={{
                     maxHeight: '90vh',
                     overflowY: 'auto',
-                    position: 'relative'
+                    position: 'relative',
+                    animation: 'modalSlideUp 0.3s ease-out'
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
+                {/* Flag Accent Stripe */}
+                <div className="flex h-[4px] w-full overflow-hidden">
+                    <div className="flex-1 bg-[#319B42]" />
+                    <div className="flex-1 bg-[#FFD200]" />
+                    <div className="flex-1 bg-[#DE2010]" />
+                    <div className="flex-1 bg-[#000000]" />
+                </div>
+
                 {/* Header */}
-                <div className="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
-                    <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+                <div className="px-6 py-5 bg-emerald-800 flex justify-between items-center sticky top-0 z-10 shadow-lg">
+                    <h3 className="text-xl font-extrabold text-white tracking-tight">{title}</h3>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        className="p-2 hover:bg-white hover:bg-opacity-20 rounded-xl transition-all text-white border border-white border-opacity-10 shadow-sm"
                         aria-label="Close modal"
                     >
-                        <X className="w-6 h-6 text-gray-500" />
+                        <X className="w-5 h-5" />
                     </button>
                 </div>
 
