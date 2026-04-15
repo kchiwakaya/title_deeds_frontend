@@ -367,10 +367,7 @@ const ApplicationForm = ({ user }) => {
     }
 
     const nextStep = () => {
-        if (step === 4) {
-            handleCalculatePricing();
-        }
-        if (step < 5) setStep(step + 1)
+        if (step < 4) setStep(step + 1)
     }
     const prevStep = () => setStep(s => s - 1)
 
@@ -386,8 +383,7 @@ const ApplicationForm = ({ user }) => {
         { title: 'Personal', icon: <User size={18} /> },
         { title: 'Farm', icon: <MapPin size={18} /> },
         { title: 'Spouse', icon: <Users size={18} /> },
-        { title: 'Documents', icon: <Upload size={18} /> },
-        { title: 'Review', icon: <FileCheck size={18} /> }
+        { title: 'Documents', icon: <Upload size={18} /> }
     ]
 
     return (
@@ -686,40 +682,18 @@ const ApplicationForm = ({ user }) => {
                                     </div>
 
                                     {/* Workflow Banner */}
-                                    {isVerified && (
-                                        farmsDbVerified ? (
-                                            <div className="flex items-start gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-sm text-emerald-800">
-                                                <FileCheck size={18} className="text-emerald-600 mt-0.5 shrink-0" />
-                                                <span>
-                                                    <strong>Farm record found.</strong> Your farm details have been pre-filled from the Lands Database and Surveyor General records. Fields are locked — please contact the Lands Office if any details are incorrect.
-                                                </span>
-                                            </div>
-                                        ) : (
-                                            <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
-                                                <AlertCircle size={18} className="text-amber-500 mt-0.5 shrink-0" />
-                                                <span>
-                                                    <strong>Farm record not found in Lands Database.</strong> Please enter your farm details manually below. You will also be required to upload your Tenure Document.
-                                                </span>
-                                            </div>
-                                        )
+                                    {isVerified && farmsDbVerified && (
+                                        <div className="flex items-start gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-sm text-emerald-800">
+                                            <FileCheck size={18} className="text-emerald-600 mt-0.5 shrink-0" />
+                                            <span>
+                                                <strong>Farm record found.</strong> Your farm details have been pre-filled from the Lands Database and Surveyor General records. Fields are locked — please contact the Lands Office if any details are incorrect.
+                                            </span>
+                                        </div>
                                     )}
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="md:col-span-2">
-                                            <div className="flex justify-between items-center mb-1">
-                                                <label className="block text-sm font-medium">Property Details *</label>
-                                                {/* Only show the manual SG lookup button when NOT already verified by Lands DB */}
-                                                {!farmsDbVerified && (
-                                                    <button
-                                                        type="button" 
-                                                        onClick={handleVerifyProperty}
-                                                        disabled={verifyingProperty}
-                                                        className="btn btn-secondary py-1 px-3 text-xs"
-                                                    >
-                                                        {verifyingProperty ? 'Querying SG API...' : 'Verify Property from SG'}
-                                                    </button>
-                                                )}
-                                            </div>
+
                                             
                                             {!isSurveyed && isLandVerified && (
                                                 <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-md text-amber-800 text-sm">
@@ -1043,11 +1017,7 @@ const ApplicationForm = ({ user }) => {
                                                     {(isManualFarmEntry && !editId) && <span className="text-red-600"> *</span>}
                                                 </p>
                                                 <p className="text-xs text-gray-500 text-center mb-1">PDF or Image (Max 10MB)</p>
-                                                {isManualFarmEntry && !editId && (
-                                                    <p className="text-xs text-amber-700 text-center font-medium mb-2">
-                                                        Required — your farm was not found in the Lands Database
-                                                    </p>
-                                                )}
+
                                                 {editId && existingApp?.tenure_document && (
                                                     <p className="text-xs text-green-700 text-center mb-2">
                                                         ✓ Current file: <span className="font-medium">{existingApp.tenure_document.split('/').pop()}</span>
@@ -1183,94 +1153,6 @@ const ApplicationForm = ({ user }) => {
                                 </div>
                             )}
 
-                            {/* Step 5: Review & Payment */}
-                            {step === 5 && (
-                                <div className="space-y-6">
-                                    <h3 className="text-2xl font-bold mb-6">Review & Payment</h3>
-                                    
-                                    <div className="bg-gray-50 p-4 rounded-lg border">
-                                        <h4 className="font-bold mb-4 text-emerald-800">Application Summary</h4>
-                                        <div className="grid grid-cols-2 gap-y-2 text-sm">
-                                            <span className="text-gray-500 text-xs uppercase tracking-wider">Property:</span>
-                                            <span className="font-medium">{watch('farm_name') || 'Not specified'}</span>
-                                            
-                                            <span className="text-gray-500 text-xs uppercase tracking-wider">Extent:</span>
-                                            <span className="font-medium">{watch('farm_extent')} Hectares</span>
-                                            
-                                            <span className="text-gray-500 text-xs uppercase tracking-wider">Survey Status:</span>
-                                            <span className={`font-medium ${isSurveyed ? 'text-green-600' : 'text-amber-600'}`}>
-                                                {isSurveyed ? 'Surveyed' : 'Not Surveyed (DSG Visit Required)'}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className="card border-2 border-emerald-100 shadow-lg">
-                                        <div className="p-4 bg-emerald-50 border-b border-emerald-100 flex justify-between items-center">
-                                            <h4 className="font-bold text-emerald-900">Purchase Price Valuation</h4>
-                                            {isCalculatingPrice && <div className="text-xs text-emerald-600 animate-pulse">Calculating...</div>}
-                                        </div>
-                                        <div className="p-6 space-y-4">
-                                            {priceData ? (
-                                                <>
-                                                    <div className="flex justify-between text-lg">
-                                                        <span className="text-gray-600">Base Price:</span>
-                                                        <span className="font-mono">${priceData.base_price?.toLocaleString()}</span>
-                                                    </div>
-                                                    {priceData.discounts && priceData.discounts.map((d, i) => (
-                                                        <div key={i} className="flex justify-between text-sm text-green-600 font-medium">
-                                                            <span>{d.reason}:</span>
-                                                            <span>-${d.amount?.toLocaleString()} ({d.percentage}%)</span>
-                                                        </div>
-                                                    ))}
-                                                    <div className="border-t pt-4 mt-4 flex justify-between text-2xl font-bold text-emerald-900">
-                                                        <span>Final Purchase Price:</span>
-                                                        <span className="font-mono">${priceData.final_price?.toLocaleString()}</span>
-                                                    </div>
-                                                </>
-                                            ) : (
-                                                <div className="text-center py-4 text-gray-500">
-                                                    Click 'Next' from Step 4 or trigger calculation.
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <h4 className="font-bold text-gray-700">Select Payment Method</h4>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <label className={`flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all ${watch('payment_method') === 'Cash' || !watch('payment_method') ? 'border-emerald-600 bg-emerald-50 shadow-md' : 'border-gray-100 hover:border-gray-300'}`}>
-                                                <input type="radio" value="Cash" {...register('payment_method')} className="hidden" />
-                                                <div className="text-emerald-700 font-bold">CASH PAYMENT</div>
-                                                <div className="text-[10px] text-emerald-600 font-bold uppercase tracking-tighter bg-emerald-100 px-2 py-0.5 rounded">15% Incentive Applied</div>
-                                            </label>
-                                            <label className={`flex flex-col items-center gap-2 p-4 border-2 rounded-xl cursor-pointer transition-all ${watch('payment_method') === 'Mortgage' ? 'border-blue-600 bg-blue-50 shadow-md' : 'border-gray-100 hover:border-gray-300'}`}>
-                                                <input type="radio" value="Mortgage" {...register('payment_method')} className="hidden" />
-                                                <div className="text-blue-700 font-bold">MORTGAGE</div>
-                                                <div className="text-[10px] text-blue-600 font-bold uppercase tracking-tighter bg-blue-100 px-2 py-0.5 rounded">Financing Available</div>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    {watch('payment_method') === 'Mortgage' && (
-                                        <div className="p-6 bg-blue-50 rounded-xl border border-blue-200 animate-in fade-in duration-300">
-                                            <label className="block text-sm font-bold text-blue-800 mb-4 flex items-center gap-2">
-                                                <MapPin className="text-blue-600" size={18} />
-                                                Select Participating Bank (via Dokuma)
-                                            </label>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                {['CBZ Bank', 'CABS', 'FBC Bank', 'Nedbank', 'Stanbic Bank'].map(bank => (
-                                                    <label key={bank} className="flex items-center gap-3 p-3 bg-white border border-blue-100 rounded-lg hover:border-blue-400 Transition-all cursor-pointer">
-                                                        <input type="radio" value={bank} {...register('selected_bank', { required: watch('payment_method') === 'Mortgage' })} />
-                                                        <span className="text-sm font-medium text-gray-700">{bank}</span>
-                                                    </label>
-                                                ))}
-                                            </div>
-                                            {errors.selected_bank && <p className="text-red-600 text-xs mt-2 font-medium">Please select a bank for your mortgage.</p>}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
                             {/* Navigation Buttons */}
                             <div className="flex justify-between mt-12 border-t pt-6">
                                 <button
@@ -1281,7 +1163,7 @@ const ApplicationForm = ({ user }) => {
                                 >
                                     <ChevronLeft size={18} /> Back
                                 </button>
-                                {step < 5 && (
+                                {step < 4 && (
                                     <button
                                         key="next-btn"
                                         type="button"
@@ -1291,7 +1173,7 @@ const ApplicationForm = ({ user }) => {
                                         Next <ChevronRight size={18} />
                                     </button>
                                 )}
-                                {step === 5 && (
+                                {step === 4 && (
                                     <button
                                         key="submit-btn"
                                         type="button"
