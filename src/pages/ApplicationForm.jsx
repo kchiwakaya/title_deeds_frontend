@@ -26,6 +26,13 @@ const ApplicationForm = ({ user }) => {
     const [isSurveyed, setIsSurveyed] = useState(true) // Default to true until checked
     const [priceData, setPriceData] = useState(null)
     const [isCalculatingPrice, setIsCalculatingPrice] = useState(false)
+    const [pipelineResult, setPipelineResult] = useState(null) // 4-step verification result
+
+    // Derived workflow flags from pipeline result
+    // true  → RG passed but NOT in Lands DB → farmer enters farm details manually + must upload tenure doc
+    // false → found in Lands DB (and optionally SG) → fields pre-filled, tenure upload skipped
+    const farmsDbVerified = pipelineResult?.lands_db?.status === 'found'
+    const isManualFarmEntry = isVerified && !farmsDbVerified
 
     // Auto-populate user data from registration
     useEffect(() => {
@@ -159,15 +166,19 @@ const ApplicationForm = ({ user }) => {
     const handleVerifyID = async () => {
         setVerifying(true);
         setError('');
+        setPipelineResult(null);
         try {
-            // Trigger verification in backend (uses logged-in user)
+            // Trigger the full 3-step verification pipeline in backend
             const verifyRes = await axios.post('/api/users/profile/verify/');
-            
-            // On success, fetch the updated profile data
+            const pipeline = verifyRes.data?.pipeline || {};
+            setPipelineResult(pipeline);
+
+            // Fetch updated profile data (bio-data from RG)
             const profileRes = await axios.get('/api/users/profile/update/');
             const data = profileRes.data;
-            
-            reset({
+
+            // Base form values from profile
+            const updatedValues = {
                 ...watch(),
                 date_of_birth: data.date_of_birth,
                 sex: data.gender,
@@ -175,13 +186,36 @@ const ApplicationForm = ({ user }) => {
                 title: data.title,
                 contact_address: data.residential_address,
                 is_war_veteran: data.is_war_veteran,
-                war_vet_number: data.war_vet_number
-            });
-            
+                war_vet_number: data.war_vet_number,
+            };
+
+            // Auto-prefill farm fields from Lands DB record (if found)
+            const landsRecord = pipeline?.lands_db?.record;
+            if (landsRecord) {
+                if (landsRecord.farm_name)    updatedValues.farm_name   = landsRecord.farm_name;
+                if (landsRecord.district)     updatedValues.district    = landsRecord.district;
+                if (landsRecord.province)     updatedValues.province    = landsRecord.province;
+                if (landsRecord.farm_id)      updatedValues.plot_number = String(landsRecord.farm_id);
+                if (landsRecord.extent_ha)    updatedValues.farm_extent = String(landsRecord.extent_ha);
+                if (landsRecord.tenure_type)  updatedValues.tenure_document_type = landsRecord.tenure_type;
+            }
+
+            // Mark land as verified / surveyed from SG result
+            const sgResult = pipeline?.surveyor_general;
+            if (sgResult && sgResult.status === 'found') {
+                setIsLandVerified(true);
+                setIsSurveyed(sgResult.is_surveyed);
+            }
+
+            reset(updatedValues);
             setIsVerified(true);
         } catch (err) {
             console.error('Verification error:', err);
+            // Store partial pipeline result from error response so UI can show step failures
             const respData = err.response?.data;
+            if (respData?.pipeline) {
+                setPipelineResult(respData.pipeline);
+            }
             let errorMsg = 'Verification failed. Please refer to the Registrar General office.';
             if (respData) {
                 if (typeof respData === 'string') {
@@ -405,11 +439,21 @@ const ApplicationForm = ({ user }) => {
                                                 <FileCheck size={16} className="animate-spin" /> Verifying with Registrar General...
                                             </div>
                                         ) : isVerified ? (
-                                            <div className="flex items-center gap-2 text-emerald-600 font-bold text-sm bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                                                <FileCheck size={16} /> Identity Verified
+                                            <div className="flex flex-wrap gap-2">
+                                                <div className="flex items-center gap-2 text-emerald-600 font-bold text-sm bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                                                    <FileCheck size={16} /> Identity Verified
+                                                </div>
+                                                {pipelineResult?.war_veterans?.farmer?.is_veteran && (
+                                                    <div className="flex items-center gap-2 text-amber-700 font-bold text-sm bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                                                        🪖 War Veteran Status Confirmed
+                                                    </div>
+                                                )}
                                             </div>
                                         ) : null}
                                     </div>
+
+                                    {/* === End Pipeline Panel === */}
+
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-sm font-medium mb-1">Title *</label>
@@ -640,18 +684,41 @@ const ApplicationForm = ({ user }) => {
                                     <div className="w-full bg-gray-200 rounded-full h-2.5">
                                         <div className="bg-primary h-2.5 rounded-full" style={{ width: `${(step / 5) * 100}%` }}></div>
                                     </div>
+
+                                    {/* Workflow Banner */}
+                                    {isVerified && (
+                                        farmsDbVerified ? (
+                                            <div className="flex items-start gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-sm text-emerald-800">
+                                                <FileCheck size={18} className="text-emerald-600 mt-0.5 shrink-0" />
+                                                <span>
+                                                    <strong>Farm record found.</strong> Your farm details have been pre-filled from the Lands Database and Surveyor General records. Fields are locked — please contact the Lands Office if any details are incorrect.
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
+                                                <AlertCircle size={18} className="text-amber-500 mt-0.5 shrink-0" />
+                                                <span>
+                                                    <strong>Farm record not found in Lands Database.</strong> Please enter your farm details manually below. You will also be required to upload your Tenure Document.
+                                                </span>
+                                            </div>
+                                        )
+                                    )}
+
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="md:col-span-2">
                                             <div className="flex justify-between items-center mb-1">
                                                 <label className="block text-sm font-medium">Property Details *</label>
-                                                <button 
-                                                    type="button" 
-                                                    onClick={handleVerifyProperty}
-                                                    disabled={verifyingProperty}
-                                                    className="btn btn-secondary py-1 px-3 text-xs"
-                                                >
-                                                    {verifyingProperty ? 'Querying SG API...' : 'Verify Property from Lands/SG'}
-                                                </button>
+                                                {/* Only show the manual SG lookup button when NOT already verified by Lands DB */}
+                                                {!farmsDbVerified && (
+                                                    <button
+                                                        type="button" 
+                                                        onClick={handleVerifyProperty}
+                                                        disabled={verifyingProperty}
+                                                        className="btn btn-secondary py-1 px-3 text-xs"
+                                                    >
+                                                        {verifyingProperty ? 'Querying SG API...' : 'Verify Property from SG'}
+                                                    </button>
+                                                )}
                                             </div>
                                             
                                             {!isSurveyed && isLandVerified && (
@@ -665,11 +732,23 @@ const ApplicationForm = ({ user }) => {
                                             )}
 
                                             <label className="block text-sm font-medium mb-1">Farm Name / Property Description *</label>
-                                            <input {...register('farm_name', { required: 'Farm name is required' })} className={`input ${errors.farm_name ? 'border-red-600' : ''}`} placeholder="e.g. Subdivision A of Farm B" />
+                                            <input
+                                                {...register('farm_name', { required: 'Farm name is required' })}
+                                                readOnly={farmsDbVerified}
+                                                className={`input ${farmsDbVerified ? 'bg-gray-100 cursor-not-allowed' : ''} ${errors.farm_name ? 'border-red-600' : ''}`}
+                                                placeholder="e.g. Subdivision A of Farm B"
+                                            />
+                                            {farmsDbVerified && (
+                                                <p className="text-xs text-emerald-600 mt-1">✓ Confirmed from Lands Database</p>
+                                            )}
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium mb-1">Province *</label>
-                                            <select {...register('province', { required: true })} className="input">
+                                            <select
+                                                {...register('province', { required: true })}
+                                                disabled={farmsDbVerified}
+                                                className={`input ${farmsDbVerified ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                            >
                                                 <option value="">Select Province...</option>
                                                 {provinces.map(p => (
                                                     <option key={p} value={p}>{p}</option>
@@ -678,7 +757,11 @@ const ApplicationForm = ({ user }) => {
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium mb-1">District *</label>
-                                            <select {...register('district', { required: true })} className="input" disabled={!watch('province')}>
+                                            <select
+                                                {...register('district', { required: true })}
+                                                disabled={!watch('province') || farmsDbVerified}
+                                                className={`input ${farmsDbVerified ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                            >
                                                 <option value="">Select District...</option>
                                                 {watch('province') && locationMapping[watch('province')].districts.map(d => (
                                                     <option key={d} value={d}>{d}</option>
@@ -687,12 +770,22 @@ const ApplicationForm = ({ user }) => {
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium mb-1">Plot Number</label>
-                                            <input {...register('plot_number')} className={`input`} placeholder="Enter plot number" />
-
+                                            <input
+                                                {...register('plot_number')}
+                                                readOnly={farmsDbVerified}
+                                                className={`input ${farmsDbVerified ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                                placeholder="Enter plot number"
+                                            />
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium mb-1">Total Extent (Hectares) *</label>
-                                            <input type="number" step="0.01" {...register('farm_extent', { required: 'Farm extent is required' })} className={`input ${errors.farm_extent ? 'border-red-600' : ''}`} placeholder="Total farm size" />
+                                            <input
+                                                type="number" step="0.01"
+                                                {...register('farm_extent', { required: 'Farm extent is required' })}
+                                                readOnly={farmsDbVerified}
+                                                className={`input ${farmsDbVerified ? 'bg-gray-100 cursor-not-allowed' : ''} ${errors.farm_extent ? 'border-red-600' : ''}`}
+                                                placeholder="Total farm size"
+                                            />
                                             {errors.farm_extent && (
                                                 <p className="field-error">
                                                     <AlertCircle size={14} />
@@ -726,13 +819,20 @@ const ApplicationForm = ({ user }) => {
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium mb-1">Current Tenure Document Type *</label>
-                                            <select {...register('tenure_document_type', { required: true })} className="input">
+                                            <select
+                                                {...register('tenure_document_type', { required: true })}
+                                                disabled={farmsDbVerified}
+                                                className={`input ${farmsDbVerified ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                                            >
                                                 <option value="">Select...</option>
                                                 <option value="A1 Permit">A1 Permit</option>
                                                 <option value="A2 Permit">A2 Permit</option>
                                                 <option value="Offer Letter">Offer Letter</option>
                                                 <option value="99 Year Lease">99 Year Lease</option>
                                             </select>
+                                            {farmsDbVerified && (
+                                                <p className="text-xs text-emerald-600 mt-1">✓ Confirmed from Lands Database</p>
+                                            )}
                                         </div>
                                     </div>
 
@@ -934,38 +1034,52 @@ const ApplicationForm = ({ user }) => {
                                             )}
                                         </div>
 
-                                        {/* Tenure Document */}
-                                        <div className="p-6 border-2 border-dashed rounded-lg hover:bg-emerald-50 transition">
-                                            <Upload className="w-8 h-8 mx-auto text-emerald-600 mb-2" />
-                                            <p className="font-medium text-center">
-                                                Tenure Document
-                                                {!editId && ' *'}
-                                            </p>
-                                            <p className="text-xs text-gray-500 text-center mb-2">PDF or Image (Max 10MB)</p>
-                                            {editId && existingApp?.tenure_document && (
-                                                <p className="text-xs text-green-700 text-center mb-2">
-                                                    ✓ Current file: <span className="font-medium">{existingApp.tenure_document.split('/').pop()}</span>
+                                        {/* Tenure Document - only required when farm was NOT found in Lands DB */}
+                                        {(isManualFarmEntry || editId) ? (
+                                            <div className="p-6 border-2 border-dashed border-amber-300 rounded-lg hover:bg-amber-50 transition">
+                                                <Upload className="w-8 h-8 mx-auto text-amber-500 mb-2" />
+                                                <p className="font-medium text-center">
+                                                    Tenure Document
+                                                    {(isManualFarmEntry && !editId) && <span className="text-red-600"> *</span>}
                                                 </p>
-                                            )}
-                                            <input
-                                                type="file"
-                                                {...register('tenure_document', {
-                                                    required: editId ? false : 'Tenure document is required',
-                                                    validate: validateFileFormat
-                                                })}
-                                                className="w-full text-sm"
-                                                accept="image/*,application/pdf"
-                                            />
-                                            {editId && (
-                                                <p className="text-xs text-gray-400 text-center mt-1">Upload a new file to replace the existing one</p>
-                                            )}
-                                            {errors.tenure_document && (
-                                                <p className="field-error justify-center">
-                                                    <AlertCircle size={14} />
-                                                    {errors.tenure_document.message}
-                                                </p>
-                                            )}
-                                        </div>
+                                                <p className="text-xs text-gray-500 text-center mb-1">PDF or Image (Max 10MB)</p>
+                                                {isManualFarmEntry && !editId && (
+                                                    <p className="text-xs text-amber-700 text-center font-medium mb-2">
+                                                        Required — your farm was not found in the Lands Database
+                                                    </p>
+                                                )}
+                                                {editId && existingApp?.tenure_document && (
+                                                    <p className="text-xs text-green-700 text-center mb-2">
+                                                        ✓ Current file: <span className="font-medium">{existingApp.tenure_document.split('/').pop()}</span>
+                                                    </p>
+                                                )}
+                                                <input
+                                                    type="file"
+                                                    {...register('tenure_document', {
+                                                        required: (isManualFarmEntry && !editId) ? 'Tenure document is required when farm record is not found in Lands Database' : false,
+                                                        validate: validateFileFormat
+                                                    })}
+                                                    className="w-full text-sm"
+                                                    accept="image/*,application/pdf"
+                                                />
+                                                {editId && (
+                                                    <p className="text-xs text-gray-400 text-center mt-1">Upload a new file to replace the existing one</p>
+                                                )}
+                                                {errors.tenure_document && (
+                                                    <p className="field-error justify-center">
+                                                        <AlertCircle size={14} />
+                                                        {errors.tenure_document.message}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        ) : farmsDbVerified ? (
+                                            <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-sm text-emerald-700 flex items-center gap-3">
+                                                <FileCheck size={18} className="shrink-0" />
+                                                <span>
+                                                    <strong>Tenure document not required.</strong> Your farm was successfully verified in the Lands Database and Surveyor General records.
+                                                </span>
+                                            </div>
+                                        ) : null}
 
                                         {/* Other Attachments */}
                                         <div className="p-6 border-2 border-dashed rounded-lg hover:bg-emerald-50 transition">

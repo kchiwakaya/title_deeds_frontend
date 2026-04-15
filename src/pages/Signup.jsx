@@ -9,26 +9,46 @@ const Signup = () => {
     const navigate = useNavigate()
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState('')
+    const [fieldErrors, setFieldErrors] = useState({})
 
     const onSubmit = async (data) => {
         setIsLoading(true)
         setError('')
+        setFieldErrors({})
         try {
             await api.post('/register/', data)
             alert("Registration successful! Please login.")
             navigate('/login')
         } catch (err) {
             console.error(err)
-            // Handle different error structures from backend
             const backendError = err.response?.data
-            if (backendError?.national_id) {
-                setError(backendError.national_id[0])
-            } else if (backendError?.email) {
-                setError(backendError.email[0])
-            } else if (backendError?.error) {
-                setError(backendError.error)
+            if (backendError && typeof backendError === 'object') {
+                // Collect field-level errors from the backend response
+                const newFieldErrors = {}
+                let hasFieldError = false
+
+                for (const [field, messages] of Object.entries(backendError)) {
+                    const msg = Array.isArray(messages) ? messages[0] : messages
+                    if (['first_name', 'surname', 'national_id', 'email', 'password'].includes(field)) {
+                        newFieldErrors[field] = msg
+                        hasFieldError = true
+                    }
+                }
+
+                if (hasFieldError) {
+                    setFieldErrors(newFieldErrors)
+                    // Also show a top-level summary
+                    setError('Registration rejected — the details you entered do not match Registrar General records. Please check the highlighted fields below.')
+                } else if (backendError.error) {
+                    setError(backendError.error)
+                } else if (backendError.non_field_errors) {
+                    const nfe = backendError.non_field_errors
+                    setError(Array.isArray(nfe) ? nfe[0] : nfe)
+                } else {
+                    setError('Registration failed. Please check your details and try again.')
+                }
             } else {
-                setError('Registration failed. Please Check your details and try again.')
+                setError('Registration failed. Please check your details and try again.')
             }
         } finally {
             setIsLoading(false)
@@ -60,7 +80,7 @@ const Signup = () => {
                     <div>
                         <label className="block text-sm font-medium mb-1">National ID</label>
                         <input
-                            className={`input ${errors.national_id ? 'border-red-600' : ''}`}
+                            className={`input ${errors.national_id || fieldErrors.national_id ? 'border-red-600' : ''}`}
                             {...register('national_id', { 
                                 required: 'National ID is required',
                                 pattern: {
@@ -76,6 +96,7 @@ const Signup = () => {
                                 {errors.national_id.message}
                             </p>
                         )}
+
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -83,20 +104,22 @@ const Signup = () => {
                         <div>
                             <label className="block text-sm font-medium mb-1">First Name</label>
                             <input
-                                className="input"
+                                className={`input ${fieldErrors.first_name ? 'border-red-600' : ''}`}
                                 {...register('first_name', { required: 'Required' })}
                                 placeholder="First Name"
                             />
+
                         </div>
 
                         {/* Surname */}
                         <div>
                             <label className="block text-sm font-medium mb-1">Surname</label>
                             <input
-                                className="input"
+                                className={`input ${fieldErrors.surname ? 'border-red-600' : ''}`}
                                 {...register('surname', { required: 'Required' })}
                                 placeholder="Surname"
                             />
+
                         </div>
                     </div>
 
@@ -115,11 +138,12 @@ const Signup = () => {
                         <div>
                             <label className="block text-sm font-medium mb-1">Email</label>
                             <input
-                                className="input"
+                                className={`input ${fieldErrors.email ? 'border-red-600' : ''}`}
                                 type="email"
                                 {...register('email', { required: 'Required' })}
                                 placeholder="your@email.com"
                             />
+
                         </div>
                     </div>
 
