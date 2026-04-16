@@ -1,0 +1,926 @@
+
+ RUN  v4.0.18 /home/lawrence/Documents/deeds backend/title_deeds_frontend
+
+ ❯ src/pages/OfficerDashboard.test.jsx (0 test)
+ ❯ src/pages/ApplicationForm.test.jsx (0 test)
+ ✓ src/components/roles/AccountsInterface.test.jsx (4 tests) 709ms
+     ✓ renders the accounts interface correctly  350ms
+ ❯ src/components/roles/LIMSInterface.test.jsx (5 tests | 1 failed) 1282ms
+     × renders the LIMS interface correctly 424ms
+     ✓ verifies LIMS successfully 207ms
+     ✓ rejects application successfully  497ms
+     ✓ validates rejection type is selected 73ms
+     ✓ handles API error gracefully 70ms
+ ❯ src/components/roles/SurveyorInterface.test.jsx (6 tests | 1 failed) 1245ms
+     × renders the surveyor interface correctly 408ms
+     ✓ allows entering official farm details 227ms
+     ✓ confirms survey successfully 197ms
+     ✓ requests survey successfully 132ms
+     ✓ validates required fields for survey confirmation 124ms
+     ✓ handles API error gracefully 135ms
+ ❯ src/components/roles/ConveyancerInterface.test.jsx (8 tests | 1 failed) 1136ms
+     ✓ renders the conveyancer interface correctly  371ms
+     ✓ calculates total correctly when fees are unpaid 112ms
+     × calculates total correctly when fees are paid 172ms
+     ✓ allows entering notes 115ms
+     ✓ calls onClose when cancel button is clicked 75ms
+     ✓ prepares agreement successfully 110ms
+     ✓ handles API error gracefully 94ms
+     ✓ disables button while processing 71ms
+ ✓ src/components/roles/ZLCInterface.test.jsx (5 tests) 1124ms
+     ✓ renders the ZLC interface correctly  328ms
+     ✓ flags dispute successfully  485ms
+ ✓ src/components/roles/ValuationInterface.test.jsx (6 tests) 461ms
+ ✓ src/components/roles/EstatesInterface.test.jsx (5 tests) 509ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/pages/ApplicationForm.test.jsx [ src/pages/ApplicationForm.test.jsx ]
+TypeError: __vite_ssr_import_0__.default.create is not a function
+ ❯ src/services/api.js:25:19
+     23|  * Provides centralized request/response handling
+     24|  */
+     25| const api = axios.create({
+       |                   ^
+     26|     baseURL: '/api',
+     27|     headers: {
+ ❯ src/services/applicationService.js:1:1
+ ❯ src/pages/ApplicationForm.jsx:8:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/pages/OfficerDashboard.test.jsx [ src/pages/OfficerDashboard.test.jsx ]
+TypeError: __vite_ssr_import_0__.default.create is not a function
+ ❯ src/services/api.js:25:19
+     23|  * Provides centralized request/response handling
+     24|  */
+     25| const api = axios.create({
+       |                   ^
+     26|     baseURL: '/api',
+     27|     headers: {
+ ❯ src/services/applicationService.js:1:1
+ ❯ src/hooks/useApplications.js:2:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/roles/ConveyancerInterface.test.jsx > ConveyancerInterface > calculates total correctly when fees are paid
+TestingLibraryElementError: Found multiple elements with the text: $50000.00
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<span[39m
+  [33mclass[39m=[32m"font-bold"[39m
+[36m>[39m
+  [0m$[0m
+  [0m50000.00[0m
+[36m</span>[39m
+
+Ignored nodes: comments, script, style
+[36m<span>[39m
+  [0m$[0m
+  [0m50000.00[0m
+[36m</span>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"card max-w-3xl w-full max-h-[90vh] overflow-y-auto"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex justify-between items-center mb-6 pb-4 border-b"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"text-2xl font-bold text-emerald-700"[39m
+          [36m>[39m
+            [0mConveyancer - Agreement Preparation[0m
+          [36m</h3>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"text-gray-500 hover:text-gray-700"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-6"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl"[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-xs text-gray-500 uppercase font-bold"[39m
+              [36m>[39m
+                [0mApplicant[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-semibold"[39m
+              [36m>[39m
+                [0mJohn Doe[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-xs text-gray-500 uppercase font-bold"[39m
+              [36m>[39m
+                [0mNational ID[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-semibold"[39m
+              [36m>[39m
+                [0m12-345678-A-12[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-xs text-gray-500 uppercase font-bold"[39m
+              [36m>[39m
+                [0mOfficial Farm Name[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-semibold text-emerald-600"[39m
+              [36m>[39m
+                [0mOfficial Test Farm[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-xs text-gray-500 uppercase font-bold"[39m
+              [36m>[39m
+                [0mHectarage[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-semibold"[39m
+              [36m>[39m
+                [0m99.5000[0m
+                [0m Ha[0m
+              [36m</p>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"bg-blue-50 p-4 rounded-xl border border-blue-200"[39m
+          [36m>[39m
+            [36m<h4[39m
+              [33mclass[39m=[32m"font-bold text-blue-900 mb-3 flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"lucide lucide-dollar-sign"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"18"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<line[39m
+                  [33mx1[39m=[32m"12"[39m
+                  [33mx2[39m=[32m"12"[39m
+                  [33my1[39m=[32m"2"[39m
+                  [33my2[39m=[32m"22"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mFinancial Summary[0m
+            [36m</h4>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"space-y-2 text-sm"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex justify-between"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0mLand Valuation:[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"font-bold"[39m
+                [36m>[39m
+                  [0m$[0m
+                  [0m50000.00[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex justify-between text-gray-700"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0mApplication Fee:[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"font-semibold"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"text-green-600"[39m
+                  [36m>[39m
+                    [0m$10.00 (Paid)[0m
+                  [36m</span>[39m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex justify-between text-gray-700"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0mSurvey Fee:[0m
+                [36m</span>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"font-semibold"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"text-green-600"[39m
+                  [36m>[39m
+                    [0m$[0m
+                    [0m1000.00[0m
+                    [0m (Paid)[0m
+                  [36m</span>[39m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex justify-between pt-2 border-t border-blue-300 text-lg font-bold text-blue-900"[39m
+              [36m>[39m
+                [36m<span>[39m
+                  [0mTotal Amount Due:[0m
+                [36m</span>[39m
+                [36m<span>[39m
+                  [0m$[0m
+                  [0m50000.00[0m
+                [36m</span>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"bg-emerald-50 p-4 rounded-xl border border-emerald-200"[39m
+          [36m>[39m
+            [36m<h4[39m
+              [33mclass[39m=[32m"font-bold text-emerald-900 mb-2 flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"lucide lucide-file-pen-line"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"18"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M8 18h1"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mConveyancer Task[0m
+            [36m</h4>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm text-emerald-800"[39m
+            [36m>[39m
+              [0mReview all financial details and prepare the purchase agreement. Once confirmed, the application  will be marked as [0m
+              [36m<strong>[39m
+                [0mAPPROVED[0m
+              [36m</strong>[39m
+              [0m and ready for title deed issuance upon payment.[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block font-bold text-gray-700 mb-2"[39m
+            [36m>[39m
+              [0mAgreement Notes (Optional)[0m
+            [36m</label>[39m
+            [36m<textarea[39m
+              [33mclass[39m=[32m"input w-full h-24"[39m
+              [33mplaceholder[39m=[32m"Add any notes about the agreement..."[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-4 pt-4 border-t"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn bg-gray-200 text-gray-700 hover:bg-gray-300 flex-1 py-3 font-bold"[39m
+            [36m>[39m
+              [0mCancel[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn bg-green-600 text-white hover:bg-green-700 flex-1 py-3 font-bold"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"lucide lucide-file-pen-line inline mr-2"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m18 5-2.414-2.414A2 2 0 0 0 14.172 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M21.378 12.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M8 18h1"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mPrepare Agreement & Approve[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/roles/ConveyancerInterface.test.jsx:77:23
+     75| 
+     76|         // Total should be only valuation amount
+     77|         expect(screen.getByText('$50000.00')).toBeInTheDocument()
+       |                       ^
+     78|     })
+     79| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/components/roles/LIMSInterface.test.jsx > LIMSInterface > renders the LIMS interface correctly
+TestingLibraryElementError: Found multiple elements with the text: /LIMS Verification/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<h3[39m
+  [33mclass[39m=[32m"text-2xl font-bold text-emerald-700"[39m
+[36m>[39m
+  [0mLIMS Verification[0m
+[36m</h3>[39m
+
+Ignored nodes: comments, script, style
+[36m<h4[39m
+  [33mclass[39m=[32m"font-bold text-blue-900 mb-2"[39m
+[36m>[39m
+  [0mLIMS Verification Task[0m
+[36m</h4>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"card max-w-3xl w-full max-h-[90vh] overflow-y-auto"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex justify-between items-center mb-6 pb-4 border-b sticky top-0 bg-white z-10"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"text-2xl font-bold text-emerald-700"[39m
+          [36m>[39m
+            [0mLIMS Verification[0m
+          [36m</h3>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"text-gray-500 hover:text-gray-700"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-6"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<h4[39m
+              [33mclass[39m=[32m"text-emerald-700 font-bold mb-3 flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"lucide lucide-user"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"18"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"7"[39m
+                  [33mr[39m=[32m"4"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0m Applicant Information[0m
+            [36m</h4>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl"[39m
+            [36m>[39m
+              [36m<div>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-xs text-gray-500 uppercase font-bold"[39m
+                [36m>[39m
+                  [0mFull Name[0m
+                [36m</p>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"font-semibold"[39m
+                [36m>[39m
+                  [0mJohn Doe[0m
+                [36m</p>[39m
+              [36m</div>[39m
+              [36m<div>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-xs text-gray-500 uppercase font-bold"[39m
+                [36m>[39m
+                  [0mNational ID[0m
+                [36m</p>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"font-semibold"[39m
+                [36m>[39m
+                  [0m12-345678-A-12[0m
+                [36m</p>[39m
+              [36m</div>[39m
+              [36m<div>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-xs text-gray-500 uppercase font-bold"[39m
+                [36m>[39m
+                  [0mFarm Name[0m
+                [36m</p>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"font-semibold"[39m
+                [36m>[39m
+                  [0mTest Farm[0m
+                [36m</p>[39m
+              [36m</div>[39m
+              [36m<div>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-xs text-gray-500 uppercase font-bold"[39m
+                [36m>[39m
+                  [0mDistrict[0m
+                [36m</p>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"font-semibold"[39m
+                [36m>[39m
+                  [0mHarare[0m
+                [36m</p>[39m
+              [36m</div>[39m
+              [36m<div>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-xs text-gray-500 uppercase font-bold"[39m
+                [36m>[39m
+                  [0mFarm ID[0m
+                [36m</p>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"font-semibold text-emerald-600"[39m
+                [36m>[39m
+                  [0mFRM-001[0m
+                [36m</p>[39m
+              [36m</div>[39m
+              [36m<div>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"text-xs text-gray-500 uppercase font-bold"[39m
+                [36m>[39m
+                  [0mExtent (Ha)[0m
+                [36m</p>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"font-semibold"[39m
+                [36m>[39m
+                  [0m100.0000[0m
+                [36m</p>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"bg-blue-50 p-4 rounded-xl border border-blue-200"[39m
+          [36m>[39m
+            [36m<h4[39m
+              [33mclass[39m=[32m"font-bold text-blue-900 mb-2"[39m
+            [36m>[39m
+              [0mLIMS Verification Task[0m
+            [36m</h4>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm text-blue-800"[39m
+            [36m>[39m
+              [0mVerify that the farm with ID [0m
+              [36m<strong>[39m
+                [0mFRM-001[0m
+              [36m</strong>[39m
+              [0m exists in the LIMS database. Check for double allocations, deceased farm owners, or missing records.[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<h4[39m
+              [33mclass[39m=[32m"text-emerald-700 font-bold mb-3 flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"lucide lucide-file-text"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"18"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M14 2v4a2 2 0 0 0 2 2h4"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M10 9H8"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 13H8"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M16 17H8"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0m Submitted Documents[0m
+            [36m</h4>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"grid grid-cols-2 gap-3"[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-4 pt-4 border-t sticky bottom-0 bg-white"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn bg-green-600 text-white hover:bg-green-700 flex-1 py-3 font-bold disabled:bg-gray-300"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"lucide lucide-check inline mr-2"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mVerify - Farm Found[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn bg-red-600 text-white hover:bg-red-700 flex-1 py-3 font-bold"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"lucide lucide-x inline mr-2"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M18 6 6 18"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 6 12 12"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mReject Application[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/roles/LIMSInterface.test.jsx:37:23
+     35|         )
+     36| 
+     37|         expect(screen.getByText(/LIMS Verification/i)).toBeInTheDocume…
+       |                       ^
+     38|         expect(screen.getByText('John Doe')).toBeInTheDocument()
+     39|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/components/roles/SurveyorInterface.test.jsx > SurveyorInterface > renders the surveyor interface correctly
+TestingLibraryElementError: Found multiple elements with the text: /Surveyor General/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<h3[39m
+  [33mclass[39m=[32m"text-2xl font-bold text-emerald-700"[39m
+[36m>[39m
+  [0mSurveyor General - Survey Verification[0m
+[36m</h3>[39m
+
+Ignored nodes: comments, script, style
+[36m<h4[39m
+  [33mclass[39m=[32m"font-bold text-blue-900 mb-2 flex items-center gap-2"[39m
+[36m>[39m
+  [36m<svg[39m
+    [33mclass[39m=[32m"lucide lucide-map-pin"[39m
+    [33mfill[39m=[32m"none"[39m
+    [33mheight[39m=[32m"18"[39m
+    [33mstroke[39m=[32m"currentColor"[39m
+    [33mstroke-linecap[39m=[32m"round"[39m
+    [33mstroke-linejoin[39m=[32m"round"[39m
+    [33mstroke-width[39m=[32m"2"[39m
+    [33mviewBox[39m=[32m"0 0 24 24"[39m
+    [33mwidth[39m=[32m"18"[39m
+    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+  [36m>[39m
+    [36m<path[39m
+      [33md[39m=[32m"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"[39m
+    [36m/>[39m
+    [36m<circle[39m
+      [33mcx[39m=[32m"12"[39m
+      [33mcy[39m=[32m"10"[39m
+      [33mr[39m=[32m"3"[39m
+    [36m/>[39m
+  [36m</svg>[39m
+  [0mSurveyor General Task[0m
+[36m</h4>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"card max-w-3xl w-full max-h-[90vh] overflow-y-auto"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex justify-between items-center mb-6 pb-4 border-b"[39m
+        [36m>[39m
+          [36m<h3[39m
+            [33mclass[39m=[32m"text-2xl font-bold text-emerald-700"[39m
+          [36m>[39m
+            [0mSurveyor General - Survey Verification[0m
+          [36m</h3>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"text-gray-500 hover:text-gray-700"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33mclass[39m=[32m"lucide lucide-x"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"24"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M18 6 6 18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m6 6 12 12"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"space-y-6"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl"[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-xs text-gray-500 uppercase font-bold"[39m
+              [36m>[39m
+                [0mApplicant[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-semibold"[39m
+              [36m>[39m
+                [0mJohn Doe[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-xs text-gray-500 uppercase font-bold"[39m
+              [36m>[39m
+                [0mCurrent Farm Name[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-semibold"[39m
+              [36m>[39m
+                [0mTest Farm[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-xs text-gray-500 uppercase font-bold"[39m
+              [36m>[39m
+                [0mCurrent Extent (Ha)[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-semibold"[39m
+              [36m>[39m
+                [0m100.0000[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-xs text-gray-500 uppercase font-bold"[39m
+              [36m>[39m
+                [0mDistrict[0m
+              [36m</p>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-semibold"[39m
+              [36m/>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"bg-blue-50 p-4 rounded-xl border border-blue-200"[39m
+          [36m>[39m
+            [36m<h4[39m
+              [33mclass[39m=[32m"font-bold text-blue-900 mb-2 flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"lucide lucide-map-pin"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"18"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"[39m
+                [36m/>[39m
+                [36m<circle[39m
+                  [33mcx[39m=[32m"12"[39m
+                  [33mcy[39m=[32m"10"[39m
+                  [33mr[39m=[32m"3"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mSurveyor General Task[0m
+            [36m</h4>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm text-blue-800"[39m
+            [36m>[39m
+              [0mCheck if the farm has been surveyed. If surveyed, provide the official farm name and exact hectarage. The values you enter will be used for valuation and on the title deed.[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex gap-4 pt-4 border-t"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn bg-green-600 text-white hover:bg-green-700 flex-1 py-3 font-bold"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"lucide lucide-check inline mr-2"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M20 6 9 17l-5-5"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mFarm Is Surveyed[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33mclass[39m=[32m"btn bg-orange-600 text-white hover:bg-orange-700 flex-1 py-3 font-bold"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33mclass[39m=[32m"lucide lucide-x inline mr-2"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mheight[39m=[32m"20"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"2"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mwidth[39m=[32m"20"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M18 6 6 18"[39m
+                [36m/>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"m6 6 12 12"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [0mRequest Survey[0m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ getElementError node_modules/@testing-library/dom/dist/query-helpers.js:20:35
+ ❯ getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:23:10
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:55:13
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/components/roles/SurveyorInterface.test.jsx:35:23
+     33|         )
+     34| 
+     35|         expect(screen.getByText(/Surveyor General/i)).toBeInTheDocumen…
+       |                       ^
+     36|         expect(screen.getByText('John Doe')).toBeInTheDocument()
+     37|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  5 failed | 4 passed (9)
+      Tests  3 failed | 36 passed (39)
+   Start at  11:40:10
+   Duration  12.15s (transform 4.40s, setup 8.24s, import 8.68s, tests 6.47s, environment 32.19s)
+
