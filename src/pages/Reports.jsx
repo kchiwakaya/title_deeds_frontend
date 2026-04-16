@@ -149,7 +149,7 @@ const Reports = ({ user }) => {
         if (!drillDownData || !drillDownData.results.length) return
 
         const worksheetData = drillDownData.results.map(app => ({
-            'ID': app.id,
+            'Reference': `REF-${app.id.substring(0, 6).toUpperCase()}`,
             'Farm Name': app.farm_name,
             'Farmer': app.farmer_name,
             'District': app.district,
@@ -192,7 +192,7 @@ const Reports = ({ user }) => {
             }
 
             const worksheetData = apps.map(app => ({
-                'ID': app.id,
+                'Reference': `REF-${app.id.substring(0, 6).toUpperCase()}`,
                 'Farm Name': app.farm_name,
                 'Farmer': app.farmer_name,
                 'District': app.district,
@@ -267,7 +267,7 @@ const Reports = ({ user }) => {
                 <table><thead><tr>
                     <th>ID</th><th>Farm Name</th><th>Farmer</th><th>District</th><th>Status</th><th>Date</th><th>Price</th>
                 </tr></thead><tbody>
-                ${apps.map(a => `<tr><td>${a.id}</td><td>${a.farm_name}</td><td>${a.farmer_name}</td><td>${a.district}</td><td>${formatStatus(a.status)}</td><td>${new Date(a.created_at).toLocaleDateString()}</td><td>${a.purchase_price ? '$' + a.purchase_price.toLocaleString() : '-'}</td></tr>`).join('')}
+                ${apps.map(a => `<tr><td>REF-${a.id.substring(0, 6).toUpperCase()}</td><td>${a.farm_name}</td><td>${a.farmer_name}</td><td>${a.district}</td><td>${formatStatus(a.status)}</td><td>${new Date(a.created_at).toLocaleDateString()}</td><td>${a.purchase_price ? '$' + a.purchase_price.toLocaleString() : '-'}</td></tr>`).join('')}
                 </tbody></table>
                 <script>window.onload = () => window.print()<\/script>
                 </body></html>
@@ -315,7 +315,7 @@ const Reports = ({ user }) => {
                     <tbody>
                         ${drillDownData.results.map(app => `
                             <tr>
-                                <td>${app.id}</td>
+                                <td>REF-${app.id.substring(0, 6).toUpperCase()}</td>
                                 <td>${app.farm_name}</td>
                                 <td>${app.farmer_name}</td>
                                 <td>${app.district}</td>
@@ -460,7 +460,7 @@ const Reports = ({ user }) => {
                                 <tbody className="divide-y divide-gray-100">
                                     {drillDownData.results.map((app) => (
                                         <tr key={app.id} className="hover:bg-blue-50/50 transition-colors">
-                                            <td className="px-6 py-3.5 text-sm text-gray-500 font-mono">{app.id}</td>
+                                            <td className="px-6 py-3.5 text-sm text-gray-500 font-mono">REF-{app.id.substring(0, 6).toUpperCase()}</td>
                                             <td className="px-6 py-3.5 text-sm font-medium text-gray-900">{app.farm_name}</td>
                                             <td className="px-6 py-3.5 text-sm text-gray-700">{app.farmer_name}</td>
                                             <td className="px-6 py-3.5 text-sm text-gray-700">{app.district}</td>
@@ -613,7 +613,7 @@ const Reports = ({ user }) => {
                                         <tbody>
                                             {filteredApps.map((app, idx) => (
                                                 <tr key={app.id} style={{ borderBottom: '1px solid #f3f4f6', backgroundColor: idx % 2 === 0 ? 'white' : '#f9fafb' }}>
-                                                    <td style={{ padding: '0.75rem 1.25rem', fontSize: '0.875rem', color: '#6b7280', fontFamily: 'monospace' }}>{app.id}</td>
+                                                    <td style={{ padding: '0.75rem 1.25rem', fontSize: '0.875rem', color: '#6b7280', fontFamily: 'monospace' }}>REF-{app.id.substring(0, 6).toUpperCase()}</td>
                                                     <td style={{ padding: '0.75rem 1.25rem', fontSize: '0.875rem', fontWeight: 500, color: '#1f2937' }}>{app.farm_name}</td>
                                                     <td style={{ padding: '0.75rem 1.25rem', fontSize: '0.875rem', color: '#374151' }}>{app.farmer_name}</td>
                                                     <td style={{ padding: '0.75rem 1.25rem', fontSize: '0.875rem', color: '#374151' }}>{app.district}</td>

@@ -631,89 +631,131 @@ const FarmerDashboard = ({ user }) => {
                         )}
 
 
-                        {/* Information Grid */}
-                        <div className="grid md:grid-cols-2 gap-6">
-                            {/* Personal Card */}
-                            <div className="bg-white p-6 rounded-2xl border border-gray-200 border-l-4 border-l-emerald-600 shadow-sm hover:shadow-md transition-shadow">
-                                <div className="flex items-center gap-2 mb-6 border-b border-gray-50 pb-3">
-                                    <div className="p-1.5 bg-emerald-50 rounded-lg text-emerald-600">
-                                        <Plus size={16} />
+                        {/* Information Sections (Officer Standard Layout - Pixel Perfect Match) */}
+                        <div className="space-y-6">
+                            {/* Applicant Information Block */}
+                            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-4">Applicant Information</h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-xs text-gray-500 uppercase">Full Name</label>
+                                        <p className="font-medium text-gray-900">{selectedApp.farmer_name} {selectedApp.farmer_surname}</p>
                                     </div>
-                                    <h4 className="font-black text-gray-900 text-xs uppercase tracking-widest">Farmer Identity</h4>
-                                </div>
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-baseline border-b border-gray-50 pb-2">
-                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Full Name</span>
-                                        <span className="text-sm font-bold text-gray-900">{selectedApp.farmer_name} {selectedApp.farmer_surname}</span>
+                                    <div>
+                                        <label className="text-xs text-gray-500 uppercase">National ID</label>
+                                        <p className="font-medium text-gray-900">{selectedApp.farmer_national_id}</p>
                                     </div>
-                                    <div className="flex justify-between items-baseline border-b border-gray-50 pb-2">
-                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">National ID</span>
-                                        <span className="text-sm font-bold text-gray-900">{selectedApp.farmer_national_id}</span>
+                                    <div>
+                                        <label className="text-xs text-gray-500 uppercase">Gender</label>
+                                        <p className="font-medium text-gray-900 capitalize">{selectedApp.farmer_gender || 'Not specified'}</p>
                                     </div>
-                                    <div className="flex justify-between items-baseline border-b border-gray-50 pb-2">
-                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Gender</span>
-                                        <span className="text-sm font-bold text-gray-900 capitalize">{selectedApp.farmer_gender || 'Not specified'}</span>
+                                    <div>
+                                        <label className="text-xs text-gray-500 uppercase">Date of Birth</label>
+                                        <p className="font-medium text-gray-900">{selectedApp.farmer_dob || 'Not specified'}</p>
                                     </div>
-                                    <div className="flex justify-between items-baseline">
-                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">D.O.B</span>
-                                        <span className="text-sm font-bold text-gray-900">{selectedApp.farmer_dob || 'Not specified'}</span>
+                                    <div>
+                                        <label className="text-xs text-gray-500 uppercase">Email</label>
+                                        <p className="font-medium text-gray-900">{selectedApp.farmer_email || 'N/A'}</p>
                                     </div>
-                                </div>
-                            </div>
-
-                            {/* Property Card */}
-                            <div className="bg-white p-6 rounded-2xl border border-gray-200 border-l-4 border-l-blue-600 shadow-sm hover:shadow-md transition-shadow">
-                                <div className="flex items-center gap-2 mb-6 border-b border-gray-50 pb-3">
-                                    <div className="p-1.5 bg-blue-50 rounded-lg text-blue-600">
-                                        <Search size={16} />
-                                    </div>
-                                    <h4 className="font-black text-gray-900 text-xs uppercase tracking-widest">Property Intelligence</h4>
-                                </div>
-                                <div className="space-y-4">
-                                    <div className="flex justify-between items-baseline border-b border-gray-50 pb-2">
-                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Farm Name</span>
-                                        <span className="text-sm font-bold text-gray-900">{selectedApp.farm_name}</span>
-                                    </div>
-                                    <div className="flex justify-between items-baseline border-b border-gray-50 pb-2">
-                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">District</span>
-                                        <span className="text-sm font-bold text-gray-900">{selectedApp.district}</span>
-                                    </div>
-                                    <div className="flex justify-between items-baseline border-b border-gray-50 pb-2">
-                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Extent</span>
-                                        <span className="text-sm font-bold text-gray-900">{selectedApp.farm_extent} Hectares</span>
-                                    </div>
-                                    <div className="flex justify-between items-baseline">
-                                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-wider">Tenure Type</span>
-                                        <div className="text-[10px] font-black px-2 py-1 bg-gray-100 border border-gray-200 rounded text-gray-700">{selectedApp.tenure_document_type}</div>
+                                    <div>
+                                        <label className="text-xs text-gray-500 uppercase">Mobile</label>
+                                        <p className="font-medium text-gray-900">{selectedApp.farmer_phone || 'N/A'}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Financial Summary Card */}
-                            <div className="bg-white p-6 rounded-2xl border border-gray-200 border-l-4 border-l-amber-500 shadow-md col-span-full transition-all">
-                                <div className="flex items-center gap-2 mb-6 border-b border-gray-50 pb-3">
-                                    <div className="p-1.5 bg-amber-50 rounded-lg text-amber-600">
-                                        <DollarSign size={16} />
+                            {/* Farm Details Block */}
+                            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-4">Farm Details</h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="text-xs text-gray-500 uppercase">Farm Name</label>
+                                        <p className="font-medium text-gray-900">{selectedApp.farm_name}</p>
                                     </div>
-                                    <h4 className="font-black text-gray-900 text-xs uppercase tracking-widest">Financial Evaluation</h4>
-                                </div>
-                                <div className="grid md:grid-cols-3 gap-8">
-                                    <div className="group">
-                                        <span className="text-[11px] text-gray-400 font-black uppercase tracking-[0.2em]">Purchase Price</span>
-                                        <p className="text-2xl font-black text-amber-600 tracking-tight mt-1 leading-none">
-                                            {selectedApp.purchase_price ? `$${parseFloat(selectedApp.purchase_price).toLocaleString()}` : (
-                                                ['SURVEYED', 'VALUATED'].includes(selectedApp.status) ? 'Pending Approval' : 'Processing...'
-                                            )}
+                                    <div>
+                                        <label className="text-xs text-gray-500 uppercase">District</label>
+                                        <p className="font-medium text-gray-900">{selectedApp.district}</p>
+                                    </div>
+                                    <div className="col-span-2 md:col-span-1">
+                                        <label className="text-xs text-gray-500 uppercase">Plot Number</label>
+                                        <p className="font-mono font-medium text-gray-900">{selectedApp.farm_id || 'Not assigned'}</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-gray-500 uppercase">Total Extent</label>
+                                        <p className="font-medium text-gray-900">{selectedApp.farm_extent} Ha</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-gray-500 uppercase">Arable Area</label>
+                                        <p className="font-medium text-gray-900">{selectedApp.arable_area || ''} Ha</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-gray-500 uppercase">Estimated Value</label>
+                                        <p className="font-bold text-emerald-600 text-lg">
+                                            {selectedApp.purchase_price ? `$${parseFloat(selectedApp.purchase_price).toLocaleString(undefined, { minimumFractionDigits: 2 })}` : 'Pending Valuation'}
                                         </p>
                                     </div>
-                                    <div>
-                                        <span className="text-[11px] text-gray-400 font-black uppercase tracking-[0.2em]">Payment Plan</span>
-                                        <p className="text-sm font-black text-gray-800 uppercase tracking-tight mt-1">{selectedApp.payment_plan || 'NEEDS SELECTION'}</p>
+                                </div>
+                            </div>
+
+                            {/* Uploaded Documents Block */}
+                            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-4">Uploaded Documents</h4>
+                                
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <p className="text-xs font-semibold text-gray-600 uppercase">Applicant Documents</p>
+                                        <div className="grid grid-cols-1 gap-2">
+                                            {selectedApp.national_id_copy && (
+                                                <a href={selectedApp.national_id_copy} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-2 bg-white border rounded-lg hover:bg-blue-50 hover:border-blue-300 transition group">
+                                                    <span className="text-blue-600 text-lg">📄</span>
+                                                    <span className="text-sm font-medium text-gray-700 group-hover:text-blue-700">National ID Copy</span>
+                                                    <span className="ml-auto text-xs text-blue-600 font-semibold">View →</span>
+                                                </a>
+                                            )}
+                                            {selectedApp.tenure_document && (
+                                                <a href={selectedApp.tenure_document} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-2 bg-white border rounded-lg hover:bg-blue-50 hover:border-blue-300 transition group">
+                                                    <span className="text-blue-600 text-lg">📋</span>
+                                                    <span className="text-sm font-medium text-gray-700 group-hover:text-blue-700">Tenure Document</span>
+                                                    <span className="ml-auto text-xs text-blue-600 font-semibold">View →</span>
+                                                </a>
+                                            )}
+                                            {!selectedApp.national_id_copy && !selectedApp.tenure_document && (
+                                                <p className="text-xs text-gray-400 italic px-2">No applicant documents uploaded</p>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div>
-                                        <span className="text-[11px] text-gray-400 font-black uppercase tracking-[0.2em]">Finance Partner</span>
-                                        <p className="text-sm font-black text-gray-800 uppercase tracking-tight mt-1">{selectedApp.selected_bank || 'GOVERNMENT CENTRAL'}</p>
-                                    </div>
+
+                                    {/* Spouse Documents */}
+                                    {selectedApp.spouses_data && selectedApp.spouses_data.length > 0 && selectedApp.spouses_data.some(s => s.war_vet_id_copy || s.employment_proof) && (
+                                        <div className="space-y-2 border-t pt-3">
+                                            <p className="text-xs font-semibold text-gray-600 uppercase">Spouse Documents</p>
+                                            {selectedApp.spouses_data.map((spouse, idx) => (
+                                                (spouse.war_vet_id_copy || spouse.employment_proof) && (
+                                                    <div key={idx} className="ml-1">
+                                                        <p className="text-xs font-medium text-purple-700 mb-1">
+                                                            {spouse.first_name} {spouse.surname}
+                                                        </p>
+                                                        <div className="grid grid-cols-1 gap-2 ml-2">
+                                                            {spouse.war_vet_id_copy && (
+                                                                <a href={spouse.war_vet_id_copy} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-2 bg-white border rounded-lg hover:bg-purple-50 hover:border-purple-300 transition group">
+                                                                    <span className="text-amber-600 text-lg">🎖️</span>
+                                                                    <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700">War Veteran ID</span>
+                                                                    <span className="ml-auto text-xs text-purple-600 font-semibold">View →</span>
+                                                                </a>
+                                                            )}
+                                                            {spouse.employment_proof && (
+                                                                <a href={spouse.employment_proof} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-3 py-2 bg-white border rounded-lg hover:bg-purple-50 hover:border-purple-300 transition group">
+                                                                    <span className="text-blue-600 text-lg">💼</span>
+                                                                    <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700">Employment Proof</span>
+                                                                    <span className="ml-auto text-xs text-purple-600 font-semibold">View →</span>
+                                                                </a>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

@@ -365,7 +365,9 @@ const OfficerDashboard = ({ user }) => {
                             ) : (
                                 filteredApplications.map(app => (
                                     <tr key={app.id} className="hover:bg-gray-50 transition">
-                                        <td className="px-4 py-4 text-sm font-mono text-emerald-700 font-bold">#{app.id}</td>
+                                        <td className="px-4 py-4 text-sm font-mono text-emerald-700 font-bold">
+                                            REF-{app.id.substring(0, 6).toUpperCase()}
+                                        </td>
                                         <td className="px-4 py-4">
                                             <p className="font-semibold">{app.farmer}</p>
                                             <p className="text-xs text-gray-500">Submitted {app.date}</p>
@@ -427,7 +429,7 @@ const OfficerDashboard = ({ user }) => {
             <Modal
                 isOpen={!!selectedApp}
                 onClose={() => setSelectedApp(null)}
-                title="Application Details"
+                title={selectedApp ? `Application Details - REF-${selectedApp.id.substring(0, 6).toUpperCase()}` : 'Application Details'}
                 maxWidth="max-w-4xl"
             >
                 {selectedApp && (() => {
