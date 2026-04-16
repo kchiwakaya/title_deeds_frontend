@@ -35,6 +35,7 @@ const AdminDashboard = ({ user }) => {
         email: '',
         first_name: '',
         surname: '',
+        phone_number: '',
         password: '',
         role: ''
     })
@@ -94,7 +95,7 @@ const AdminDashboard = ({ user }) => {
     }
 
     const resetForm = () => {
-        setFormData({ national_id: '', email: '', first_name: '', surname: '', password: '', role: '' })
+        setFormData({ national_id: '', email: '', first_name: '', surname: '', phone_number: '', password: '', role: '' })
     }
 
     const handleEdit = (user) => {
@@ -104,6 +105,7 @@ const AdminDashboard = ({ user }) => {
             first_name: user.name.split(' ')[0],
             surname: user.name.split(' ').slice(1).join(' '),
             email: user.email,
+            phone_number: user.phone_number || '',
             role: user.role,
             password: ''
         })
@@ -374,6 +376,17 @@ const AdminDashboard = ({ user }) => {
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             placeholder="john@titledeeds.gov.zw"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium mb-1">Phone Number</label>
+                        <input
+                            required
+                            className="input"
+                            value={formData.phone_number}
+                            onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
+                            placeholder="+263771234567"
                         />
                     </div>
 

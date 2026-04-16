@@ -584,12 +584,11 @@ const ApplicationForm = ({ user }) => {
                                     {/* Farmer Categories */}
                                     <h4 className="text-lg font-bold mt-8 mb-4 border-t pt-6">Farmer Category (tick all that apply)</h4>
                                     <div className="grid grid-cols-2 gap-3">
-                                        <label className={`flex items-center gap-2 p-3 border rounded ${isVerified ? 'bg-gray-50 cursor-not-allowed opacity-75' : 'hover:bg-gray-50 cursor-pointer'}`}>
+                                        <label className="flex items-center gap-2 p-3 border rounded hover:bg-gray-50 cursor-pointer">
                                             <input 
                                                 type="checkbox" 
                                                 {...register('is_war_veteran')} 
                                                 className="w-4 h-4" 
-                                                disabled={isVerified}
                                             />
                                             <span className="text-sm font-medium">War Veteran</span>
                                         </label>
@@ -598,9 +597,8 @@ const ApplicationForm = ({ user }) => {
                                                 <label className="block text-sm font-medium mb-1">War Veteran Number *</label>
                                                 <input 
                                                     {...register('war_vet_number')} 
-                                                    className={`input w-64 ${isVerified ? 'bg-gray-100 cursor-not-allowed' : ''}`} 
+                                                    className="input w-64" 
                                                     placeholder="Enter War Vet No." 
-                                                    readOnly={isVerified}
                                                 />
                                             </div>
                                         )}
