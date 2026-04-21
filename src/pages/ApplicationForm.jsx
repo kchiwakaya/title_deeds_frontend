@@ -1018,7 +1018,7 @@ const ApplicationForm = ({ user }) => {
                                             <input
                                                 type="file"
                                                 {...register('national_id_copy', {
-                                                    required: editId ? false : 'ID copy is required',
+                                                    required: false,
                                                     validate: validateFileFormat
                                                 })}
                                                 className="w-full text-sm"
@@ -1053,7 +1053,7 @@ const ApplicationForm = ({ user }) => {
                                                 <input
                                                     type="file"
                                                     {...register('tenure_document', {
-                                                        required: (isManualFarmEntry && !editId) ? 'Tenure document is required when farm record is not found in Lands Database' : false,
+                                                        required: false,
                                                         validate: validateFileFormat
                                                     })}
                                                     className="w-full text-sm"
