@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 import {
     UserPlus, Users, Shield, Search, Eye, EyeOff, CheckCircle,
     Briefcase, User as UserIcon, AlertCircle, Pencil,
-    LayoutDashboard, Lock, Power, Trash2
+    LayoutDashboard, Lock, Power, Trash2, Key
 } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import Breadcrumb from '../components/Breadcrumb'
 import Modal from '../components/Modal'
 import StatCard from '../components/StatCard'
@@ -168,6 +168,13 @@ const AdminDashboard = ({ user }) => {
                         <LayoutDashboard size={20} />
                         Audit Logs
                     </a>
+                    <Link
+                        to="/admin/api-keys"
+                        className="btn bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2 shadow-xl font-bold px-5 py-2.5 text-base border-2 border-blue-700"
+                    >
+                        <Key size={20} />
+                        API Keys
+                    </Link>
                     <a
                         href="/reports"
                         className="btn bg-yellow-500 text-gray-900 hover:bg-yellow-400 flex items-center gap-2 shadow-lg font-bold px-4 py-2 border-2 border-yellow-600"

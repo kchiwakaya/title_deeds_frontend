@@ -10,6 +10,7 @@ import ApplicationForm from './pages/ApplicationForm'
 import AdminDashboard from './pages/AdminDashboard'
 import Reports from './pages/Reports'
 import AuditLogs from './pages/AuditLogs'
+import ApiKeyManagement from './pages/ApiKeyManagement'
 import ProfileModal from './components/ProfileModal'
 import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
@@ -94,6 +95,12 @@ function Header({ user, setUser }) {
                                                     className="header-dropdown-item"
                                                 >
                                                     <Shield size={16} className="text-red-600" /> Admin Portal
+                                                </button>
+                                                <button
+                                                    onClick={() => { navigate('/admin/api-keys'); setShowPortalLinks(false) }}
+                                                    className="header-dropdown-item"
+                                                >
+                                                    <Shield size={16} className="text-blue-600" /> API Key Management
                                                 </button>
                                                 <button
                                                     onClick={() => { navigate('/officer-dashboard'); setShowPortalLinks(false) }}
@@ -263,6 +270,10 @@ function App() {
                         <Route
                             path="/audit-logs"
                             element={user && user.role === 'admin' ? <AuditLogs user={user} /> : <Navigate to="/login" />}
+                        />
+                        <Route
+                            path="/admin/api-keys"
+                            element={user && user.role === 'admin' ? <ApiKeyManagement user={user} /> : <Navigate to="/login" />}
                         />
                         <Route path="/apply" element={user ? <ApplicationForm user={user} /> : <Navigate to="/login" />} />
                     </Routes>
