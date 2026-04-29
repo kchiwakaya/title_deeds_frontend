@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { ChevronRight, ChevronLeft, Upload, Landmark, User, MapPin, FileCheck, Users, AlertCircle } from 'lucide-react'
+import { ChevronRight, ChevronLeft, Upload, Landmark, User, MapPin, FileCheck, Users, AlertCircle, X, ExternalLink, FileText } from 'lucide-react'
 import axios from 'axios'
 import Breadcrumb from '../components/Breadcrumb'
 import { locationMapping, provinces } from '../data/locationMapping'
@@ -28,6 +28,9 @@ const ApplicationForm = ({ user }) => {
     const [isCalculatingPrice, setIsCalculatingPrice] = useState(false)
     const [pipelineResult, setPipelineResult] = useState(null) // 4-step verification result
     const [surveyDiagramLink, setSurveyDiagramLink] = useState(null)
+    const [pdfModalOpen, setPdfModalOpen] = useState(false)
+    const [pdfModalUrl, setPdfModalUrl] = useState('')
+    const [draftAppId, setDraftAppId] = useState(null) // ID of the backend Draft Application (set after verification)
 
     // Derived workflow flags from pipeline result
     // true  → RG passed but NOT in Lands DB → farmer enters farm details manually + must upload tenure doc
@@ -215,6 +218,17 @@ const ApplicationForm = ({ user }) => {
 
             reset(updatedValues);
             setIsVerified(true);
+
+            // Fetch the backend Draft Application ID so we can proxy the survey diagram PDF
+            // even before the farmer has submitted the form (the Draft is created by the pipeline).
+            try {
+                const appListRes = await axios.get('/api/applications/');
+                if (appListRes.data.length > 0) {
+                    setDraftAppId(appListRes.data[0].id);
+                }
+            } catch (_) {
+                // Non-critical – if this fails the fallback raw URL is still used
+            }
         } catch (err) {
             console.error('Verification error:', err);
             // Store partial pipeline result from error response so UI can show step failures
@@ -393,6 +407,7 @@ const ApplicationForm = ({ user }) => {
     ]
 
     return (
+        <>
         <div className="max-w-4xl mx-auto py-8">
             <Breadcrumb items={[
                 { label: 'Home', link: '/' },
@@ -819,16 +834,25 @@ const ApplicationForm = ({ user }) => {
                                                     <option value="99 Year Lease">99 Year Lease</option>
                                                 </select>
                                                 {surveyDiagramLink && (
-                                                    <a 
-                                                        href={surveyDiagramLink} 
-                                                        target="_blank" 
-                                                        rel="noopener noreferrer"
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            // Use the backend proxy endpoint (keeps SG credentials server-side).
+                                                            // Prefer: editId (editing mode) → draftAppId (new, post-verification)
+                                                            //         → raw URL (last resort fallback).
+                                                            const appId = editId || draftAppId;
+                                                            const proxyUrl = appId
+                                                                ? `/api/applications/${appId}/survey_diagram/`
+                                                                : surveyDiagramLink;
+                                                            setPdfModalUrl(proxyUrl);
+                                                            setPdfModalOpen(true);
+                                                        }}
                                                         className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 transition-all font-medium flex items-center gap-2 whitespace-nowrap"
-                                                        title="View Official Survey Diagram"
+                                                        title="View Official Survey Diagram PDF"
                                                     >
-                                                        <MapPin size={16} />
+                                                        <FileText size={16} />
                                                         View Diagram
-                                                    </a>
+                                                    </button>
                                                 )}
                                             </div>
                                             {farmsDbVerified && (
@@ -1217,6 +1241,78 @@ const ApplicationForm = ({ user }) => {
                 </>
             )}
         </div>
+
+            {/* ===== Survey Diagram PDF Viewer Modal ===== */}
+            {pdfModalOpen && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+                    onClick={() => setPdfModalOpen(false)}
+                >
+                    <div
+                        className="relative bg-white rounded-2xl shadow-2xl flex flex-col"
+                        style={{ width: '90vw', maxWidth: '1100px', height: '88vh' }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Modal header */}
+                        <div className="flex items-center justify-between px-6 py-4 border-b rounded-t-2xl bg-emerald-700 text-white">
+                            <div className="flex items-center gap-3">
+                                <FileText size={20} />
+                                <div>
+                                    <h2 className="font-bold text-lg leading-tight">Survey Diagram</h2>
+                                    <p className="text-emerald-200 text-xs">Official document from the Surveyor General</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <a
+                                    href={pdfModalUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1.5 text-emerald-200 hover:text-white text-sm transition-colors"
+                                    title="Open in new tab"
+                                >
+                                    <ExternalLink size={16} />
+                                    Open in New Tab
+                                </a>
+                                <button
+                                    type="button"
+                                    onClick={() => setPdfModalOpen(false)}
+                                    className="p-1.5 rounded-full hover:bg-emerald-600 transition-colors"
+                                    title="Close"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* PDF Viewer */}
+                        <div className="flex-1 p-3 bg-gray-100 rounded-b-2xl">
+                            <iframe
+                                src={pdfModalUrl}
+                                title="Survey Diagram PDF"
+                                className="w-full h-full rounded-lg border-0 shadow-inner"
+                                style={{ minHeight: 0 }}
+                            >
+                                {/* Fallback for browsers that don't support iframe PDF rendering */}
+                                <div className="flex flex-col items-center justify-center h-full gap-4 text-gray-500">
+                                    <FileText size={48} className="text-gray-300" />
+                                    <p className="text-center">
+                                        Your browser cannot display the PDF inline.<br />
+                                        <a
+                                            href={pdfModalUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-emerald-600 font-semibold hover:underline"
+                                        >
+                                            Click here to download / open in a new tab.
+                                        </a>
+                                    </p>
+                                </div>
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
     )
 }
 

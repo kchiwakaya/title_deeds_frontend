@@ -37,8 +37,15 @@ const Signup = () => {
 
                 if (hasFieldError) {
                     setFieldErrors(newFieldErrors)
-                    // Also show a top-level summary
-                    setError('Registration rejected — the details you entered do not match Registrar General records. Please check the highlighted fields below.')
+                    // Find the first error message to display at the top
+                    const firstErrorField = Object.keys(newFieldErrors)[0]
+                    const firstErrorMessage = newFieldErrors[firstErrorField]
+                    
+                    if (firstErrorMessage.includes('match')) {
+                        setError('Registration rejected — the details you entered do not match Registrar General records. Please check the highlighted fields below.')
+                    } else {
+                        setError(`Registration failed: ${firstErrorMessage}`)
+                    }
                 } else if (backendError.error) {
                     setError(backendError.error)
                 } else if (backendError.non_field_errors) {

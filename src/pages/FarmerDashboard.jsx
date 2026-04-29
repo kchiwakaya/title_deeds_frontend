@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Plus, FileText, Clock, CheckCircle, XCircle, Eye, Search, AlertCircle, RefreshCw, MessageSquare, DollarSign, Pencil } from 'lucide-react'
+import { Plus, FileText, Clock, CheckCircle, XCircle, Eye, Search, AlertCircle, RefreshCw, MessageSquare, DollarSign, Pencil, X, ExternalLink, MapPin } from 'lucide-react'
 import axios from 'axios'
 import Breadcrumb from '../components/Breadcrumb'
 import Modal from '../components/Modal'
@@ -19,6 +19,8 @@ const FarmerDashboard = ({ user }) => {
     const [paymentMethod, setPaymentMethod] = useState('')
     const [selectedBank, setSelectedBank] = useState('')
     const [submittingPayment, setSubmittingPayment] = useState(false)
+    const [pdfModalOpen, setPdfModalOpen] = useState(false)
+    const [pdfModalUrl, setPdfModalUrl] = useState('')
 
     const BANK_CHOICES = [
         { value: 'FBC', label: 'FBC Bank' },
@@ -179,6 +181,7 @@ const FarmerDashboard = ({ user }) => {
     )
 
     return (
+        <>
         <div>
             {error && (
                 <div className="alert alert-error">
@@ -694,6 +697,26 @@ const FarmerDashboard = ({ user }) => {
                                             {selectedApp.purchase_price ? `$${parseFloat(selectedApp.purchase_price).toLocaleString(undefined, { minimumFractionDigits: 2 })}` : 'Pending Valuation'}
                                         </p>
                                     </div>
+                                    {/* Survey Diagram Link */}
+                                    {selectedApp.survey_diagram_link && (
+                                        <div className="col-span-2">
+                                            <label className="text-xs text-gray-500 uppercase">Survey Diagram</label>
+                                            <div className="mt-1">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setPdfModalUrl(`/api/applications/${selectedApp.id}/survey_diagram/`);
+                                                        setPdfModalOpen(true);
+                                                    }}
+                                                    className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
+                                                    title="View Official Survey Diagram PDF"
+                                                >
+                                                    <FileText size={15} />
+                                                    View Survey Diagram
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -890,6 +913,78 @@ const FarmerDashboard = ({ user }) => {
                 </div>
             </Modal>
         </div>
+
+        {/* ===== Survey Diagram PDF Viewer Modal ===== */}
+        {pdfModalOpen && (
+            <div
+                className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+                onClick={() => setPdfModalOpen(false)}
+            >
+                <div
+                    className="relative bg-white rounded-2xl shadow-2xl flex flex-col"
+                    style={{ width: '90vw', maxWidth: '1100px', height: '88vh' }}
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    {/* Modal header */}
+                    <div className="flex items-center justify-between px-6 py-4 border-b rounded-t-2xl bg-emerald-700 text-white">
+                        <div className="flex items-center gap-3">
+                            <FileText size={20} />
+                            <div>
+                                <h2 className="font-bold text-lg leading-tight">Survey Diagram</h2>
+                                <p className="text-emerald-200 text-xs">Official document from the Surveyor General</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <a
+                                href={pdfModalUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 text-emerald-200 hover:text-white text-sm transition-colors"
+                                title="Open in new tab"
+                            >
+                                <ExternalLink size={16} />
+                                Open in New Tab
+                            </a>
+                            <button
+                                type="button"
+                                onClick={() => setPdfModalOpen(false)}
+                                className="p-1.5 rounded-full hover:bg-emerald-600 transition-colors"
+                                title="Close"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* PDF Viewer */}
+                    <div className="flex-1 p-3 bg-gray-100 rounded-b-2xl">
+                        <iframe
+                            src={pdfModalUrl}
+                            title="Survey Diagram PDF"
+                            className="w-full h-full rounded-lg border-0 shadow-inner"
+                            style={{ minHeight: 0 }}
+                        >
+                            {/* Fallback for browsers that don't support iframe PDF rendering */}
+                            <div className="flex flex-col items-center justify-center h-full gap-4 text-gray-500">
+                                <FileText size={48} className="text-gray-300" />
+                                <p className="text-center">
+                                    Your browser cannot display the PDF inline.<br />
+                                    <a
+                                        href={pdfModalUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-emerald-600 font-semibold hover:underline"
+                                    >
+                                        Click here to download / open in a new tab.
+                                    </a>
+                                </p>
+                            </div>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        )}
+        </>
     )
 }
 
